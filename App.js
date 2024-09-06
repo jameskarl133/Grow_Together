@@ -7,6 +7,8 @@ import Svg, { Path } from 'react-native-svg';
 import Login from './app/screens/Login'; // Adjust the path if necessary
 import SignUp from './app/screens/SignUp'; // Adjust the path if necessary
 import Dashboard from './app/screens/Dashboard';
+import DrawerNav from './app/navigation/Drawer';
+import NavBar from './app/navigation/NavBar';
 
 const Stack = createStackNavigator();
 
@@ -40,12 +42,15 @@ function HomeScreen({ navigation }) {
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Navigator initialRouteName="Home" screenOptions={{headerShown:false}}>
+      
+        {/* <Stack.Screen name="Home" component={HomeScreen} /> */}
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="SignUp" component={SignUp} />
-        <Stack.Screen name="Dashboard" component={Dashboard} />
+        <Stack.Screen name="DrawerNav" component={DrawerNav} />
+        {/* <Stack.Screen name="Dashboard" component={Dashboard} /> */}
       </Stack.Navigator>
+
     </NavigationContainer>
   );
 }
