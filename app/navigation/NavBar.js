@@ -16,8 +16,8 @@ export default function NavBar(props) {
           )}
         />
         <DrawerItem
-          label="Manage Crop"
-          onPress={() => props.navigation.navigate('ManageCrop')}
+          label="Monitor Crop"
+          onPress={() => props.navigation.navigate('MonitorCrop')}
           icon={({ color, size }) => (
             <Ionicons name="settings-outline" size={size} color={color} />
           )}

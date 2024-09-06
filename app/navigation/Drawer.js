@@ -4,6 +4,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Dashboard from '../screens/Dashboard';
+import MonitorCrop from '../screens/MonitorCrop';
 import ViewProfile from '../screens/ViewProfile';
 import Logs from '../screens/logs';
 
@@ -28,8 +29,8 @@ function CustomDrawerContent(props) {
           )}
         />
         <DrawerItem
-          label="Manage Crop"
-          onPress={() => props.navigation.navigate('ManageCrop')}
+          label="Monitor Crop"
+          onPress={() => props.navigation.navigate('MonitorCrop')}
           icon={({ color, size }) => (
             <Ionicons name="settings-outline" size={size} color={color} />
           )}
@@ -60,6 +61,7 @@ const DrawerNav = () => {
       screenOptions={{ headerTitle: '' }}
     >
       <Drawer.Screen name="Dashboard" component={Dashboard} />
+      <Drawer.Screen name="MonitorCrop" component={MonitorCrop} />
       <Drawer.Screen name="ViewProfile" component={ViewProfile} />
       <Drawer.Screen name="Logs" component={Logs} />
       {/* <Drawer.Screen name="AddCrop" component={AddCrop} /> */}
