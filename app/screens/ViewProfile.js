@@ -11,8 +11,10 @@ const ViewProfile = () => {
       </View>
       
       {/* Name */}
-      <Text style={styles.name}>Yap, Christian Noel V.</Text>
-      
+      <View style={styles.nameContainer}>
+        <Text style={styles.name}>Yap, Christian Noel V.</Text>
+      </View>
+
       {/* Details */}
       <View style={styles.detailsContainer}>
         <View style={styles.detailRow}>
@@ -40,20 +42,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
     padding: 20,
   },
   profilePicContainer: {
-    marginBottom: 20,
+    position: 'absolute',
+    top: 20,
+    left: 20,
+  },
+  nameContainer: {
+    marginLeft: 150, 
+    marginTop: 30, 
   },
   name: {
     fontSize: 24,
     fontWeight: 'bold',
     color: 'green',
-    marginBottom: 20,
   },
   detailsContainer: {
+    marginTop: 120,
     width: '100%',
     paddingHorizontal: 20,
   },
