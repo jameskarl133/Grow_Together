@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import Svg, { Path } from 'react-native-svg'; 
-import AddCrop from '../screens/AddCrop';
+import AddCrop from './addCrop';
 
 export default function Dashboard({ navigation }) {
   return (

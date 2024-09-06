@@ -5,7 +5,7 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@rea
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Dashboard from '../screens/Dashboard';
 import ViewProfile from '../screens/ViewProfile';
-import AddCrop from '../screens/AddCrop';
+import AddCrop from '../screens/addCrop';
 import Logs from '../screens/logs';
 
 
