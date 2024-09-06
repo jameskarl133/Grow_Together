@@ -15,7 +15,7 @@ export default function Dashboard({ navigation }) {
       <View style={styles.buttonContainer}>
         <Button
           title="Add Crop"
-          onPress={() => alert('Navigate to Add Crop Screen')}
+          onPress={() => navigation.navigate('AddCrop')}
           color="green"
         />
       </View>
