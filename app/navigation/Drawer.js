@@ -5,6 +5,8 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@rea
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Dashboard from '../screens/Dashboard';
 import ViewProfile from '../screens/ViewProfile';
+import AddCrop from '../screens/AddCrop';
+
 
 const Drawer = createDrawerNavigator();
 
@@ -18,7 +20,15 @@ function CustomDrawerContent(props) {
           <Ionicons name="person-circle-outline" size={50} color="black" />
           <Text style={styles.farmerName}>Yap</Text>
         </View>
-        
+
+        <DrawerItem
+          label="Home"
+          onPress={() => props.navigation.navigate('Dashboard')}
+          icon={({ color, size }) => (
+            <Ionicons name="home-outline" size={size} color={color} />
+          )}
+        />
+
         <DrawerItem
           label="Add Crop"
           onPress={() => props.navigation.navigate('AddCrop')}
@@ -44,16 +54,17 @@ function CustomDrawerContent(props) {
     </DrawerContentScrollView>
   );
 }
+
 const DrawerNav = () => {
   return (
     <Drawer.Navigator
       initialRouteName="Dashboard"
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      drawerContent={(props) => <CustomDrawerContent {...props} />} // Correctly passes custom drawer content
       screenOptions={{ headerTitle: '' }}
     >
       <Drawer.Screen name="Dashboard" component={Dashboard} />
       <Drawer.Screen name="ViewProfile" component={ViewProfile} />
-      {/* <Drawer.Screen name="AddCrop" component={AddCrop} /> */}
+      <Drawer.Screen name="AddCrop" component={AddCrop} />
       {/* <Drawer.Screen name="ManageCrop" component={ManageCrop} /> */}
     </Drawer.Navigator>
   );

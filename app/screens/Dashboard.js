@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import Svg, { Path } from 'react-native-svg'; 
+import AddCrop from '../screens/AddCrop';
 
 export default function Dashboard({ navigation }) {
   return (
@@ -14,7 +15,7 @@ export default function Dashboard({ navigation }) {
       <View style={styles.buttonContainer}>
         <Button
           title="Add Crop"
-          onPress={() => navigation.navigate('Add Crop')}
+          onPress={() => navigation.navigate('AddCrop')}
           color="green"
         />
       </View>

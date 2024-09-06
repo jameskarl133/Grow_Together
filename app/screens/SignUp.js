@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Assuming you're using Expo, otherwise adjust the import accordingly
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { Picker } from '@react-native-picker/picker'; // Importing Picker from the correct package
 
 export default function SignUp() {
   const [firstName, setFirstName] = useState('');
   const [middleName, setMiddleName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [fieldType, setFieldType] = useState(''); // State for Type of Field
   const [dob, setDob] = useState('');
   const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
@@ -64,8 +66,23 @@ export default function SignUp() {
         value={lastName}
         onChangeText={setLastName}
       />
+
+      {/* Type of Field Dropdown */}
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={fieldType}
+          style={styles.picker}
+          onValueChange={(itemValue) => setFieldType(itemValue)}
+        >
+          <Picker.Item label="Select Field Type:" value="" enabled={false}/>
+          <Picker.Item label="Greenhouse" value="silt_soil" />
+          <Picker.Item label="Open Field" value="loamy_soil" />
+          <Picker.Item label="Small Field" value="clay_soil" />
+        </Picker>
+      </View>
+
       <TouchableOpacity onPress={showDatePicker} style={styles.dateInput}>
-        <Text style={{ color: 'gray' }}>
+        <Text style={{ color: dob ? 'black' : 'gray' }}>
           {dob ? dob : 'Date of Birth'}
         </Text>
       </TouchableOpacity>
@@ -96,7 +113,7 @@ export default function SignUp() {
         value={phoneNumber}
         onChangeText={setPhoneNumber}
         keyboardType="numeric"
-        maxLength={10} // Adjust max length as needed
+        maxLength={11}
       />
       <TextInput
         placeholder="Username"
@@ -180,6 +197,17 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     justifyContent: 'center',
   },
+  pickerContainer: {
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 20,
+    width: '100%',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+  },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -199,3 +227,4 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
 });
+
