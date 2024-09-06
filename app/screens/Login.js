@@ -7,7 +7,7 @@ export default function Login({ navigation }) {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container}> 
       <View style={styles.circle1}></View>
       <View style={styles.circle2}></View>
       <View style={styles.circle3}></View>
