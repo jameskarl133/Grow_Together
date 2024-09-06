@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, FlatList } from 'react-native';
 
 const logsData = [
   { id: '1', cropId: 'C001', cropName: 'Tomato', plantedDate: '2024-09-01', harvestedDate: '2024-10-01' },
-  { id: '2', cropId: 'C002', cropName: 'Corn', plantedDate: '2024-08-15', harvestedDate: '2024-09-15' }
+  { id: '2', cropId: 'C002', cropName: 'Corn', plantedDate: '2024-08-15', harvestedDate: '2024-09-15' },
+  { id: '3', cropId: 'C003', cropName: 'Eggplant', plantedDate: '2024-08-15', harvestedDate: '2024-10-15' }
 ];
 
 const Logs = () => {
