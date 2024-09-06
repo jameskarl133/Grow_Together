@@ -87,7 +87,7 @@ export default function AddCrop() {
       </View>
 
       <TextInput
-        placeholder="Temperature (°C)"
+        placeholder="Temperature (Â°C)"
         style={styles.input}
         value={temperature}
         onChangeText={setTemperature}
