@@ -150,7 +150,7 @@ export default function SignUp() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#e0f7e9',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
