@@ -38,7 +38,7 @@ export default function Login({ navigation }) {
       <View style={styles.buttonContainer}>
         <Button
           title="Login"
-          onPress={() => navigation.navigate('Dashboard')}
+          onPress={() => navigation.navigate('DrawerNav')}
           color="green"
         />
       </View>
