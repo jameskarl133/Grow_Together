@@ -2,9 +2,9 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
-import Ionicons from '@expo/vector-icons/Ionicons'; // Ensure you have this import for icons
-import Dashboard from '../screens/Dashboard'; // Adjust the path as necessary
-// Import your other screens if they exist (AddCrop, ManageCrop, ViewProfile)
+import Ionicons from '@expo/vector-icons/Ionicons';
+import Dashboard from '../screens/Dashboard';
+import ViewProfile from '../screens/ViewProfile';
 
 const Drawer = createDrawerNavigator();
 
@@ -16,9 +16,8 @@ function CustomDrawerContent(props) {
         {/* Farmer Profile Section */}
         <View style={styles.profileSection}>
           <Ionicons name="person-circle-outline" size={50} color="black" />
+          <Text style={styles.farmerName}>Yap</Text>
         </View>
-        
-        <Text style={styles.farmerName}>Farmer Field</Text>
         
         <DrawerItem
           label="Add Crop"
@@ -45,8 +44,6 @@ function CustomDrawerContent(props) {
     </DrawerContentScrollView>
   );
 }
-
-// Main Drawer Navigator component
 const DrawerNav = () => {
   return (
     <Drawer.Navigator
@@ -55,10 +52,9 @@ const DrawerNav = () => {
       screenOptions={{ headerTitle: '' }}
     >
       <Drawer.Screen name="Dashboard" component={Dashboard} />
-      {/* Uncomment and add components for AddCrop, ManageCrop, and ViewProfile */}
-      {/* <Drawer.Screen name="AddCrop" component={AddCrop} />
-      <Drawer.Screen name="ManageCrop" component={ManageCrop} />
-      <Drawer.Screen name="ViewProfile" component={ViewProfile} /> */}
+      <Drawer.Screen name="ViewProfile" component={ViewProfile} />
+      {/* <Drawer.Screen name="AddCrop" component={AddCrop} /> */}
+      {/* <Drawer.Screen name="ManageCrop" component={ManageCrop} /> */}
     </Drawer.Navigator>
   );
 };
@@ -72,13 +68,14 @@ const styles = StyleSheet.create({
   profileSection: {
     alignItems: 'center',
     marginBottom: 20,
+    marginTop: 20,
   },
   farmerName: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 20,
+    color: 'black',
+    marginTop: 10,
   },
 });
 
-// Make this component available to the app
 export default DrawerNav;
