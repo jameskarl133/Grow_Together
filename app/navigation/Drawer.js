@@ -5,8 +5,12 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@rea
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Dashboard from '../screens/Dashboard';
 import ViewProfile from '../screens/ViewProfile';
+<<<<<<< HEAD
 import AddCrop from '../screens/AddCrop';
 
+=======
+import Logs from '../screens/logs';
+>>>>>>> 28d7a6ed7da169eaf9cc73a088ded2b92a92fa40
 
 const Drawer = createDrawerNavigator();
 
@@ -50,6 +54,13 @@ function CustomDrawerContent(props) {
             <Ionicons name="person-outline" size={size} color={color} />
           )}
         />
+        <DrawerItem
+          label="Logs"
+          onPress={() => props.navigation.navigate('Logs')}
+          icon={({ color, size }) => (
+            <Ionicons name="list-outline" size={size} color={color} />
+          )}
+        />
       </View>
     </DrawerContentScrollView>
   );
@@ -64,7 +75,12 @@ const DrawerNav = () => {
     >
       <Drawer.Screen name="Dashboard" component={Dashboard} />
       <Drawer.Screen name="ViewProfile" component={ViewProfile} />
+<<<<<<< HEAD
       <Drawer.Screen name="AddCrop" component={AddCrop} />
+=======
+      <Drawer.Screen name="Logs" component={Logs} />
+      {/* <Drawer.Screen name="AddCrop" component={AddCrop} /> */}
+>>>>>>> 28d7a6ed7da169eaf9cc73a088ded2b92a92fa40
       {/* <Drawer.Screen name="ManageCrop" component={ManageCrop} /> */}
     </Drawer.Navigator>
   );
