@@ -7,6 +7,8 @@ import Dashboard from '../screens/Dashboard';
 import MonitorCrop from '../screens/MonitorCrop';
 import ViewProfile from '../screens/ViewProfile';
 import Logs from '../screens/logs';
+import AddCrop from '../screens/AddCrop';
+
 
 const Drawer = createDrawerNavigator();
 
@@ -21,6 +23,14 @@ function CustomDrawerContent(props) {
           <Text style={styles.farmerName}>Yap</Text>
         </View>
         
+        <DrawerItem
+          label="Home"
+          onPress={() => props.navigation.navigate('Dashboard')}
+          icon={({ color, size }) => (
+            <Ionicons name="home-outline" size={size} color={color} />
+          )}
+        />
+
         <DrawerItem
           label="Add Crop"
           onPress={() => props.navigation.navigate('AddCrop')}
@@ -61,10 +71,11 @@ const DrawerNav = () => {
       screenOptions={{ headerTitle: '' }}
     >
       <Drawer.Screen name="Dashboard" component={Dashboard} />
+      <Drawer.Screen name="AddCrop" component={AddCrop} />
       <Drawer.Screen name="MonitorCrop" component={MonitorCrop} />
       <Drawer.Screen name="ViewProfile" component={ViewProfile} />
       <Drawer.Screen name="Logs" component={Logs} />
-      {/* <Drawer.Screen name="AddCrop" component={AddCrop} /> */}
+      
       {/* <Drawer.Screen name="ManageCrop" component={ManageCrop} /> */}
     </Drawer.Navigator>
   );
