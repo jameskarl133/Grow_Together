@@ -4,7 +4,8 @@ import { View, Text, StyleSheet, FlatList } from 'react-native';
 const logsData = [
   { id: '1', message: 'Added new crop: Corn', timestamp: '2024-09-01 10:30 AM' },
   { id: '2', message: 'Managed existing crop: Wheat', timestamp: '2024-09-02 11:00 AM' },
-  { id: '3', message: 'Tomato farm watered', timestamp: '2024-10-02 2:00 PM' }
+  { id: '3', message: 'Tomato farm watered', timestamp: '2024-10-02 2:00 PM' },
+  { id: '4', message: 'Corn farm watered', timestamp: '2024-10-02 3:00 PM' }
 ];
 
 const Logs = () => {
