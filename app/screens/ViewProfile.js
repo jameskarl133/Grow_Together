@@ -1,45 +1,59 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const ViewProfile = () => {
+const ViewProfile = ({ navigation }) => {
+  // Function to handle profile update
+  const handleUpdateProfile = () => {
+    // Navigate to the update profile screen or open a modal
+    navigation.navigate('UpdateProfile'); // Assuming you have an UpdateProfile screen
+  };
+
   return (
     <LinearGradient
       colors={['#a8e6cf', '#f5f5f5']}
       style={styles.container}
     >
-    <View style={styles.container}>
-      {/* Profile picture */}
-      <View style={styles.profilePicContainer}>
-        <Ionicons name="person-circle-outline" size={120} color="green" />
-      </View>
-      
-      {/* Name */}
-      <View style={styles.nameContainer}>
-        <Text style={styles.name}>Yap, Christian Noel V.</Text>
-      </View>
+      <View style={styles.container}>
+        {/* Profile picture and name row */}
+        <View style={styles.profileRow}>
+          {/* Profile picture */}
+          <View style={styles.profilePicContainer}>
+            <Ionicons name="person-circle-outline" size={120} color="green" />
+          </View>
 
-      {/* Details */}
-      <View style={styles.detailsContainer}>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Dob:</Text>
-          <Text style={styles.detailValue}>December 7, 2002</Text>
+          {/* Name */}
+          <View style={styles.nameContainer}>
+            <Text style={styles.name}>Yap, Christian Noel V.</Text>
+          </View>
         </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Address:</Text>
-          <Text style={styles.detailValue}>Casuntingan, Mandaue City, Cebu</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Email:</Text>
-          <Text style={styles.detailValue}>christiannoelyap621@gmail.com</Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Phone Number:</Text>
-          <Text style={styles.detailValue}>09226240769</Text>
+
+        {/* Update profile icon */}
+        <TouchableOpacity style={styles.updateIconContainer} onPress={handleUpdateProfile}>
+          <Ionicons name="create-outline" size={30} color="gray" />
+        </TouchableOpacity>
+
+        {/* Details */}
+        <View style={styles.detailsContainer}>
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Dob:</Text>
+            <Text style={styles.detailValue}>December 7, 2002</Text>
+          </View>
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Address:</Text>
+            <Text style={styles.detailValue}>Casuntingan, Mandaue City, Cebu</Text>
+          </View>
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Email:</Text>
+            <Text style={styles.detailValue}>christiannoelyap621@gmail.com</Text>
+          </View>
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Phone Number:</Text>
+            <Text style={styles.detailValue}>09226240769</Text>
+          </View>
         </View>
       </View>
-    </View>
     </LinearGradient>
   );
 };
@@ -49,16 +63,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     padding: 20,
-    
+  },
+  profileRow: {
+    flexDirection: 'row', // Align the profile picture and name horizontally
+    alignItems: 'center', // Vertically center them
+    marginTop: 50, // Adjust the top margin as needed
   },
   profilePicContainer: {
+    marginRight: 20, // Add some space between the profile picture and the name
+  },
+  updateIconContainer: {
     position: 'absolute',
-    top: 20,
-    left: 20,
+    top: 30,
+    right: 20, // Positioning the update icon at the top-right
   },
   nameContainer: {
-    marginLeft: 150, 
-    marginTop: 30, 
+    flex: 1, // Make the name container take up remaining space
   },
   name: {
     fontSize: 24,
@@ -66,7 +86,7 @@ const styles = StyleSheet.create({
     color: 'green',
   },
   detailsContainer: {
-    marginTop: 120,
+    marginTop: 30,
     width: '100%',
     paddingHorizontal: 20,
   },
