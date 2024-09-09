@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Ionicons from '@expo/vector-icons/Ionicons'; 
-
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { LinearGradient } from 'expo-linear-gradient'; 
 const MonitorCrop = () => {
   const [cropData, setCropData] = useState({
     moistureLevel: 30,
@@ -28,7 +28,11 @@ const MonitorCrop = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      // Add LinearGradient for background
+      colors={['#a8e6cf', '#f5f5f5']} // Light green to light gray
+      style={styles.container}
+    >
       <Text style={styles.header}>Monitor Crop</Text>
 
       <View style={styles.statCard}>
@@ -54,7 +58,7 @@ const MonitorCrop = () => {
           <Text style={styles.statValue}>{cropData.temperature}°C</Text>
         </View>
       </View>
-    </View>
+    </LinearGradient>
   );
 };
 
@@ -62,7 +66,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
   },
   header: {
     fontSize: 26,
@@ -82,7 +85,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
-    elevation: 4, // Shadow for Android
+    elevation: 4, 
   },
   statTextContainer: {
     marginLeft: 15,

@@ -5,10 +5,10 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@rea
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Dashboard from '../screens/Dashboard';
 import MonitorCrop from '../screens/MonitorCrop';
+import SearchCrop from '../screens/SearchCrop';
 import ViewProfile from '../screens/ViewProfile';
 import Logs from '../screens/logs';
 import AddCrop from '../screens/AddCrop';
-
 
 const Drawer = createDrawerNavigator();
 
@@ -21,8 +21,9 @@ function CustomDrawerContent(props) {
         <View style={styles.profileSection}>
           <Ionicons name="person-circle-outline" size={50} color="black" />
           <Text style={styles.farmerName}>Yap</Text>
-        </View>
         
+        </View>
+        <View style={styles.line} />
         <DrawerItem
           label="Home"
           onPress={() => props.navigation.navigate('Dashboard')}
@@ -46,6 +47,13 @@ function CustomDrawerContent(props) {
           )}
         />
         <DrawerItem
+          label="Search Crop"
+          onPress={() => props.navigation.navigate('SearchCrop')}
+          icon={({ color, size }) => (
+            <Ionicons name="search-outline" size={size} color={color} />
+          )}
+        />
+        <DrawerItem
           label="View Profile"
           onPress={() => props.navigation.navigate('ViewProfile')}
           icon={({ color, size }) => (
@@ -59,10 +67,12 @@ function CustomDrawerContent(props) {
             <Ionicons name="list-outline" size={size} color={color} />
           )}
         />
+        <View style={styles.line} />
       </View>
     </DrawerContentScrollView>
   );
 }
+
 const DrawerNav = () => {
   return (
     <Drawer.Navigator
@@ -73,10 +83,9 @@ const DrawerNav = () => {
       <Drawer.Screen name="Dashboard" component={Dashboard} />
       <Drawer.Screen name="AddCrop" component={AddCrop} />
       <Drawer.Screen name="MonitorCrop" component={MonitorCrop} />
+      <Drawer.Screen name="SearchCrop" component={SearchCrop} />
       <Drawer.Screen name="ViewProfile" component={ViewProfile} />
       <Drawer.Screen name="Logs" component={Logs} />
-      
-      {/* <Drawer.Screen name="ManageCrop" component={ManageCrop} /> */}
     </Drawer.Navigator>
   );
 };
@@ -97,6 +106,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
     marginTop: 10,
+  },
+  line: {
+    width: '100%',
+    height: 1,
+    backgroundColor: 'gray',
+    marginVertical: 10,
   },
 });
 
