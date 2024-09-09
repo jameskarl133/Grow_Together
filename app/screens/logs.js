@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const logsData = [
   { id: '1', cropId: 'C001', cropName: 'Tomato', plantedDate: '2024-09-01', harvestedDate: '2024-10-01' },
@@ -19,6 +20,11 @@ const Logs = () => {
   );
 
   return (
+    <LinearGradient
+      // Add LinearGradient for background
+      colors={['#a8e6cf', '#f5f5f5']} // Light green to light gray
+      style={styles.container}
+    >
     <View style={styles.container}>
       <Text style={styles.title}>Crop Logs</Text>
       <FlatList
@@ -27,6 +33,7 @@ const Logs = () => {
         keyExtractor={(item) => item.id}
       />
     </View>
+    </LinearGradient>
   );
 };
 
@@ -35,6 +42,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
     padding: 20,
+    
   },
   title: {
     fontSize: 24,
