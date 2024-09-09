@@ -19,8 +19,8 @@ export default function SetSched() {
     const selectedHours = date.getHours();
     const selectedMinutes = date.getMinutes();
 
-    if (selectedHours >= 8 && selectedHours <= 17) {
-      alert('Invalid Time: Please choose a time outside of 8 AM to 5 PM.');
+    if (selectedHours >= 10 && selectedHours <= 15) {
+      alert('Invalid Time: Please choose a time outside of 10 AM to 4 PM.');
     } else {
       const formattedTime = formatAMPM(date);
       const alarmFrequency = alarmType === 'everyday' ? 'Daily' : 'Once';
