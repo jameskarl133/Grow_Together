@@ -65,20 +65,20 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   profileRow: {
-    flexDirection: 'row', // Align the profile picture and name horizontally
-    alignItems: 'center', // Vertically center them
-    marginTop: 50, // Adjust the top margin as needed
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    marginTop: 50,
   },
   profilePicContainer: {
-    marginRight: 20, // Add some space between the profile picture and the name
+    marginRight: 20,
   },
   updateIconContainer: {
     position: 'absolute',
     top: 30,
-    right: 20, // Positioning the update icon at the top-right
+    right: 20,
   },
   nameContainer: {
-    flex: 1, // Make the name container take up remaining space
+    flex: 1,
   },
   name: {
     fontSize: 24,
