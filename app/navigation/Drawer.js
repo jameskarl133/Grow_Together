@@ -1,4 +1,3 @@
-// Import libraries
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
@@ -9,6 +8,7 @@ import SearchCrop from '../screens/SearchCrop';
 import ViewProfile from '../screens/ViewProfile';
 import Logs from '../screens/logs';
 import AddCrop from '../screens/AddCrop';
+import SetSched from '../screens/SetSched';
 
 const Drawer = createDrawerNavigator();
 
@@ -21,7 +21,6 @@ function CustomDrawerContent(props) {
         <View style={styles.profileSection}>
           <Ionicons name="person-circle-outline" size={50} color="black" />
           <Text style={styles.farmerName}>Yap</Text>
-        
         </View>
         <View style={styles.line} />
         <DrawerItem
@@ -31,7 +30,6 @@ function CustomDrawerContent(props) {
             <Ionicons name="home-outline" size={size} color={color} />
           )}
         />
-
         <DrawerItem
           label="Add Crop"
           onPress={() => props.navigation.navigate('AddCrop')}
@@ -51,6 +49,13 @@ function CustomDrawerContent(props) {
           onPress={() => props.navigation.navigate('SearchCrop')}
           icon={({ color, size }) => (
             <Ionicons name="search-outline" size={size} color={color} />
+          )}
+        />
+        <DrawerItem
+          label="Set Schedule"
+          onPress={() => props.navigation.navigate('SetSched')}
+          icon={({ color, size }) => (
+            <Ionicons name="alarm-outline" size={size} color={color} />
           )}
         />
         <DrawerItem
@@ -84,6 +89,7 @@ const DrawerNav = () => {
       <Drawer.Screen name="AddCrop" component={AddCrop} />
       <Drawer.Screen name="MonitorCrop" component={MonitorCrop} />
       <Drawer.Screen name="SearchCrop" component={SearchCrop} />
+      <Drawer.Screen name="SetSched" component={SetSched} />
       <Drawer.Screen name="ViewProfile" component={ViewProfile} />
       <Drawer.Screen name="Logs" component={Logs} />
     </Drawer.Navigator>
