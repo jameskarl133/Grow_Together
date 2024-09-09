@@ -1,9 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const ViewProfile = () => {
   return (
+    <LinearGradient
+      colors={['#a8e6cf', '#f5f5f5']}
+      style={styles.container}
+    >
     <View style={styles.container}>
       {/* Profile picture */}
       <View style={styles.profilePicContainer}>
@@ -35,6 +40,7 @@ const ViewProfile = () => {
         </View>
       </View>
     </View>
+    </LinearGradient>
   );
 };
 
@@ -43,6 +49,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     padding: 20,
+    
   },
   profilePicContainer: {
     position: 'absolute',
