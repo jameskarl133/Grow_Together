@@ -29,8 +29,7 @@ const MonitorCrop = () => {
 
   return (
     <LinearGradient
-      // Add LinearGradient for background
-      colors={['#a8e6cf', '#f5f5f5']} // Light green to light gray
+      colors={['#a8e6cf', '#f5f5f5']}
       style={styles.container}
     >
       <Text style={styles.header}>Monitor Crop</Text>

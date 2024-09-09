@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function AddCrop() {
   const [image, setImage] = useState(null);
@@ -25,14 +26,15 @@ export default function AddCrop() {
   };
 
   const handleAddCrop = () => {
-    // Add logic to handle adding the crop
     alert('Crop added successfully!');
   };
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={['#a8e6cf', '#f5f5f5']}
+      style={styles.container}
+    >
       <Text style={styles.textColor}>Add Crop</Text>
-      
       <TouchableOpacity onPress={chooseImage} style={styles.imagePicker}>
         {image ? (
           <Image source={{ uri: image }} style={styles.image} />
@@ -48,7 +50,6 @@ export default function AddCrop() {
         onChangeText={setPlantName}
       />
 
-      {/* Soil Type Picker */}
       <View style={styles.pickerContainer}>
         <Picker
           selectedValue={soilType}
@@ -87,7 +88,7 @@ export default function AddCrop() {
       </View>
 
       <TextInput
-        placeholder="Temperature (Â°C)"
+        placeholder="Temperature (°C)"
         style={styles.input}
         value={temperature}
         onChangeText={setTemperature}
@@ -95,14 +96,13 @@ export default function AddCrop() {
       />
 
       <Button title="Add Crop" onPress={handleAddCrop} />
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e0f7e9',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
