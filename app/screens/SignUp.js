@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // Assuming you're using Expo, otherwise adjust the import accordingly
+import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function SignUp() {
@@ -13,6 +14,7 @@ export default function SignUp() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [field, setfield] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [date, setDate] = useState(new Date());
@@ -64,6 +66,17 @@ export default function SignUp() {
         value={lastName}
         onChangeText={setLastName}
       />
+      <View style={styles.pickerContainer}>
+      <Picker
+          selectedValue={field}
+          onValueChange={(itemValue) => setfield(itemValue)}
+        >
+          <Picker.Item label="Select field type:" value="" enabled={false}/>
+          <Picker.Item label="Greenhouse" value="Greenhouse" />
+          <Picker.Item label="Open" value="Open" />
+          <Picker.Item label="Small" value="Small" />
+        </Picker>
+        </View>
       <TouchableOpacity onPress={showDatePicker} style={styles.dateInput}>
         <Text style={{ color: 'gray' }}>
           {dob ? dob : 'Date of Birth'}
@@ -197,5 +210,29 @@ const styles = StyleSheet.create({
   },
   eyeIcon: {
     marginLeft: 10,
+  },
+  pickerContainer: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 20,
+    width: '100%',
+    borderRadius: 5,
+    justifyContent: 'center',
+  },
+  picker: {
+    height: 40,
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    width: '100%',
+    borderRadius: 5,
+    width: '100%',
+  },
+  textArea: {
+    height: 100,
+    textAlignVertical: 'top',
   },
 });
