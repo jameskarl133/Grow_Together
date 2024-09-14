@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
 import Svg, { Path } from 'react-native-svg'; 
 
@@ -11,6 +11,12 @@ export default function Login({ navigation }) {
       <View style={styles.circle1}></View>
       <View style={styles.circle2}></View>
       <View style={styles.circle3}></View>
+
+      <Image
+        source={require('../images/gt-logo-perm1.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
 
       <Text style={styles.textColor}>Grow Together!</Text>
 
@@ -71,6 +77,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+  },
+  logo: {
+    width: 150,  // Adjust the size of the logo
+    height: 150, // Adjust the size of the logo
+    marginBottom: 20,
   },
   textColor: {
     color: 'black',
