@@ -79,7 +79,7 @@ export default function SetSched() {
   };
 
   const handleUpdateAlarm = () => {
-    handleSetAlarm(); // Directly update the alarm without confirmation
+    handleSetAlarm();
   };
 
   return (
@@ -87,7 +87,6 @@ export default function SetSched() {
       <View style={styles.topContainer}>
         <Text style={styles.textColor}>Set Watering Schedule</Text>
 
-        {/* Select Time Section */}
         <View style={styles.timeSection}>
           <Button title="Select Time" onPress={() => setShowPicker(true)} color="green" />
           <DateTimePickerModal
@@ -99,7 +98,6 @@ export default function SetSched() {
           />
         </View>
 
-        {/* Alarm Type Picker Section */}
         <View style={styles.pickerSection}>
           <Picker
             selectedValue={alarmType}
@@ -111,7 +109,6 @@ export default function SetSched() {
           </Picker>
         </View>
 
-        {/* Set Alarm Button */}
         <View style={styles.buttonContainer}>
           <Button onPress={handleSetAlarm} title="Set Alarm" color="green" />
         </View>
