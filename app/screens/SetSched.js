@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Button } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Button, Alert } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { Picker } from '@react-native-picker/picker';
 
@@ -74,8 +74,24 @@ export default function SetSched() {
   };
 
   const handleRemoveAlarm = (index) => {
-    const updatedSchedules = schedules.filter((_, i) => i !== index);
-    setSchedules(updatedSchedules);
+    Alert.alert(
+      'Confirm Removal',
+      'Are you sure you want to remove this alarm?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: () => {
+            const updatedSchedules = schedules.filter((_, i) => i !== index);
+            setSchedules(updatedSchedules);
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   const handleUpdateAlarm = () => {
