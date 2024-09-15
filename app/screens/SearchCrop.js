@@ -26,7 +26,7 @@ const SearchCrop = () => {
           value={cropName}
           onChangeText={setCropName}
         />
-        <Button title="Search" onPress={handleSearch} />
+        <Button title="Search" onPress={handleSearch} color={'green'}/>
       </View>
     </View>
     </LinearGradient>

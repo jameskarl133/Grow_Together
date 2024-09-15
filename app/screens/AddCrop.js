@@ -156,6 +156,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   picker: {
+    color: 'gray',
     height: 40,
     width: '100%',
   },

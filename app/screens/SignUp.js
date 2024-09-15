@@ -67,16 +67,21 @@ export default function SignUp() {
         onChangeText={setLastName}
       />
       <View style={styles.pickerContainer}>
-      <Picker
+        <Picker
           selectedValue={field}
           onValueChange={(itemValue) => setfield(itemValue)}
         >
-          <Picker.Item label="Select field type:" value="" enabled={false}/>
+          <Picker.Item 
+            label="Select field type:" 
+            value="" 
+            enabled={false} 
+            style={{ color: 'gray' }} 
+          />
           <Picker.Item label="Greenhouse" value="Greenhouse" />
           <Picker.Item label="Open" value="Open" />
           <Picker.Item label="Small" value="Small" />
         </Picker>
-        </View>
+      </View>
       <TouchableOpacity onPress={showDatePicker} style={styles.dateInput}>
         <Text style={{ color: 'gray' }}>
           {dob ? dob : 'Date of Birth'}
@@ -155,7 +160,7 @@ export default function SignUp() {
           />
         </TouchableOpacity>
       </View>
-      <Button title="Sign Up" onPress={handleSignUp} />
+      <Button title="Sign Up" onPress={handleSignUp} color="green" />
     </ScrollView>
   );
 }
@@ -219,17 +224,6 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 5,
     justifyContent: 'center',
-  },
-  picker: {
-    height: 40,
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 20,
-    paddingHorizontal: 10,
-    width: '100%',
-    borderRadius: 5,
-    width: '100%',
   },
   textArea: {
     height: 100,
