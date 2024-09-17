@@ -9,6 +9,7 @@ import SignUp from './app/screens/SignUp'; // Adjust the path if necessary
 import Dashboard from './app/screens/Dashboard';
 import DrawerNav from './app/navigation/Drawer';
 import NavBar from './app/navigation/NavBar';
+import MyComponent from './Provider';
 
 const Stack = createStackNavigator();
 
@@ -41,8 +42,10 @@ function HomeScreen({ navigation }) {
 
 export default function App() {
   return (
+      <MyComponent>
+
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home" screenOptions={{headerShown:false}}>
+      <Stack.Navigator initialRouteName="Login" screenOptions={{headerShown:false}}>
       
         {/* <Stack.Screen name="Home" component={HomeScreen} /> */}
         <Stack.Screen name="Login" component={Login} />
@@ -52,6 +55,9 @@ export default function App() {
       </Stack.Navigator>
 
     </NavigationContainer>
+
+      </MyComponent>
+
   );
 }
 
