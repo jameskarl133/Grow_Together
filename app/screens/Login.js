@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
 import Svg, { Path } from 'react-native-svg'; 
+import {ApiContext} from '../../Provider';
 
 export default function Login({ navigation }) {
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const context = useContext(ApiContext);
 
   return (
     <View style={styles.container}>
@@ -167,7 +169,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: '200%',
-    height: 180,
+    height: 160,
   },
   wave: {
     position: 'absolute',
