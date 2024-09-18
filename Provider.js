@@ -1,40 +1,31 @@
-//import liraries
-import React, { Component, createContext, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { createContext, useState } from 'react';
+import axios from 'axios';
+
+// Replace with your local IP address
+const API_URL = 'http://192.168.1.7:8000/farmer';
 
 export const ApiContext = createContext();
 
-// create a component
-class MyComponent extends Component {
-    constructor(props){
-        super(props);
-        this.state = { firstName : ''}
-        
+const MyComponent = ({ children }) => {
+  const [farmer, setFarmer] = useState(null);
+
+  const postFarmerData = async (farmerData) => {
+    try {
+      const response = await axios.post(API_URL, farmerData);
+      console.log('Farmer data posted successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error posting farmer data:', error.message);
+      console.log(error.response.data);
+      throw error;
     }
-    componentDidMount(){
-        this.setState({ firstName : 'Christian'})
-    }
-    render(){
-        console.log(this.state.firstName)
-        return(
-            <ApiContext.Provider value={this.state}>
-                {this.props.children}
-            </ApiContext.Provider>
-    );
-    }
+  };
+
+  return (
+    <ApiContext.Provider value={{ postFarmerData }}>
+      {children}
+    </ApiContext.Provider>
+  );
 };
 
-
-
-// define your styles
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#2c3e50',
-    },
-});
-
-//make this component available to the app
 export default MyComponent;

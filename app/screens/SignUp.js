@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, ScrollView, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Assuming you're using Expo, otherwise adjust the import accordingly
+import React, { useContext, useState } from 'react';
+import { StyleSheet, Text, TextInput, Button, ScrollView, TouchableOpacity, View } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { ApiContext } from '../../Provider';  // Adjust the path if necessary
 
 export default function SignUp() {
   const [firstName, setFirstName] = useState('');
@@ -14,152 +15,95 @@ export default function SignUp() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [field, setfield] = useState('');
+  const [field, setField] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [date, setDate] = useState(new Date());
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+  
+  const { postFarmerData } = useContext(ApiContext);
 
-  const showDatePicker = () => {
-    setDatePickerVisibility(true);
-  };
-
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false);
-  };
+  const showDatePicker = () => setDatePickerVisibility(true);
+  const hideDatePicker = () => setDatePickerVisibility(false);
 
   const handleConfirm = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     hideDatePicker();
     setDate(currentDate);
-    setDob(currentDate.toISOString().split('T')[0]); // Format date as YYYY-MM-DD
+    setDob(currentDate.toISOString().split('T')[0]);
   };
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (password !== confirmPassword) {
       alert('Passwords do not match!');
       return;
     }
-    // Add your sign-up logic here
-    alert('Sign Up Successful');
+
+    const farmerData = {
+      fname: firstName,
+      mname: middleName,
+      lname: lastName,
+      dob: dob.toString(),
+      address: address,
+      email: email,
+      phno: phoneNumber,
+      username: username,
+      password: password,
+      field_type: field,
+      status: 'active', // or any default status you prefer
+    };
+    console.log(dob.toString());
+    try {
+      const response = await postFarmerData(farmerData);
+      alert('Sign Up Successful');
+    } catch (error) {
+      alert('Error during sign up');
+    }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.textColor}>Sign Up</Text>
-      <TextInput
-        placeholder="First Name"
-        style={styles.input}
-        value={firstName}
-        onChangeText={setFirstName}
-      />
-      <TextInput
-        placeholder="Middle Name"
-        style={styles.input}
-        value={middleName}
-        onChangeText={setMiddleName}
-      />
-      <TextInput
-        placeholder="Last Name"
-        style={styles.input}
-        value={lastName}
-        onChangeText={setLastName}
-      />
+      <TextInput placeholder="First Name" style={styles.input} value={firstName} onChangeText={setFirstName} />
+      <TextInput placeholder="Middle Name" style={styles.input} value={middleName} onChangeText={setMiddleName} />
+      <TextInput placeholder="Last Name" style={styles.input} value={lastName} onChangeText={setLastName} />
+
       <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={field}
-          onValueChange={(itemValue) => setfield(itemValue)}
-        >
-          <Picker.Item 
-            label="Select field type:" 
-            value="" 
-            enabled={false} 
-            style={{ color: 'gray' }} 
-          />
+        <Picker selectedValue={field} onValueChange={(itemValue) => setField(itemValue)}>
+          <Picker.Item label="Select field type:" value="" enabled={false} style={{ color: 'gray' }} />
           <Picker.Item label="Greenhouse" value="Greenhouse" />
           <Picker.Item label="Open" value="Open" />
           <Picker.Item label="Small" value="Small" />
         </Picker>
       </View>
+
       <TouchableOpacity onPress={showDatePicker} style={styles.dateInput}>
-        <Text style={{ color: 'gray' }}>
-          {dob ? dob : 'Date of Birth'}
-        </Text>
+        <Text style={{ color: 'gray' }}>{dob ? dob : 'Date of Birth'}</Text>
       </TouchableOpacity>
       {isDatePickerVisible && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display="default"
-          onChange={handleConfirm}
-        />
+        <DateTimePicker value={date} mode="date" display="default" onChange={handleConfirm} />
       )}
-      <TextInput
-        placeholder="Address"
-        style={styles.input}
-        value={address}
-        onChangeText={setAddress}
-      />
-      <TextInput
-        placeholder="Email"
-        style={styles.input}
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-      />
-      <TextInput
-        placeholder="Phone Number"
-        style={styles.input}
-        value={phoneNumber}
-        onChangeText={setPhoneNumber}
-        keyboardType="numeric"
-        maxLength={10} // Adjust max length as needed
-      />
-      <TextInput
-        placeholder="Username"
-        style={styles.input}
-        value={username}
-        onChangeText={setUsername}
-      />
+
+      <TextInput placeholder="Address" style={styles.input} value={address} onChangeText={setAddress} />
+      <TextInput placeholder="Email" style={styles.input} value={email} onChangeText={setEmail} keyboardType="email-address" />
+      <TextInput placeholder="Phone Number" style={styles.input} value={phoneNumber} onChangeText={setPhoneNumber} keyboardType="numeric" maxLength={11} />
+      <TextInput placeholder="Username" style={styles.input} value={username} onChangeText={setUsername} />
+
       <View style={styles.passwordContainer}>
-        <TextInput
-          placeholder="Password"
-          style={styles.passwordInput}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={!passwordVisible}
-        />
-        <TouchableOpacity
-          onPress={() => setPasswordVisible(!passwordVisible)}
-          style={styles.eyeIcon}
-        >
-          <Ionicons
-            name={passwordVisible ? 'eye-off' : 'eye'}
-            size={24}
-            color="gray"
-          />
+        <TextInput placeholder="Password" style={styles.passwordInput} value={password} onChangeText={setPassword} secureTextEntry={!passwordVisible} />
+        <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)} style={styles.eyeIcon}>
+          <Ionicons name={passwordVisible ? 'eye-off' : 'eye'} size={24} color="gray" />
         </TouchableOpacity>
       </View>
+
       <View style={styles.passwordContainer}>
-        <TextInput
-          placeholder="Confirm Password"
-          style={styles.passwordInput}
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          secureTextEntry={!confirmPasswordVisible}
-        />
-        <TouchableOpacity
-          onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
-          style={styles.eyeIcon}
-        >
-          <Ionicons
-            name={confirmPasswordVisible ? 'eye-off' : 'eye'}
-            size={24}
-            color="gray"
-          />
+        <TextInput placeholder="Confirm Password" style={styles.passwordInput} value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={!confirmPasswordVisible} />
+        <TouchableOpacity onPress={() => setConfirmPasswordVisible(!confirmPasswordVisible)} style={styles.eyeIcon}>
+          <Ionicons name={confirmPasswordVisible ? 'eye-off' : 'eye'} size={24} color="gray" />
         </TouchableOpacity>
       </View>
+
       <Button title="Sign Up" onPress={handleSignUp} color="green" />
     </ScrollView>
   );
@@ -224,9 +168,5 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 5,
     justifyContent: 'center',
-  },
-  textArea: {
-    height: 100,
-    textAlignVertical: 'top',
   },
 });
