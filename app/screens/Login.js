@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     width: '200%',
-    height: 160,
+    height: 130,
   },
   wave: {
     position: 'absolute',
