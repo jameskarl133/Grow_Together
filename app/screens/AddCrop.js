@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Image } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ApiContext } from '../../Provider';
 
 export default function AddCrop() {
   const [image, setImage] = useState(null);
@@ -11,6 +12,7 @@ export default function AddCrop() {
   const [soilDescription, setSoilDescription] = useState('');
   const [moistureLevel, setMoistureLevel] = useState('');
   const [temperature, setTemperature] = useState('');
+  const { postCropData } = useContext(ApiContext);
 
   const chooseImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -25,8 +27,27 @@ export default function AddCrop() {
     }
   };
 
-  const handleAddCrop = () => {
-    alert('Crop added successfully!');
+
+
+  const handleAddCrop = async () => {
+    const cropData ={
+      crop_name: plantName,
+      // crop_image: crimg,
+      crop_soil: soilType,
+      crop_soil_desc: soilDescription,
+      crop_moisture: moistureLevel,
+      crop_temp: temperature.toString(),
+      crop_status: 'ondb', //default
+      // crop_water_duration:,
+      // crop_created_at: 
+      // crop_updated_at:
+    };
+    try{
+      const response = await postCropData(cropData);
+      alert('Crop added successfully!');
+    }catch (error) {
+      alert('Crop not added');
+    }
   };
 
   return (
