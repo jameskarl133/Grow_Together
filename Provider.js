@@ -2,8 +2,8 @@ import React, { createContext, useState } from 'react';
 import axios from 'axios';
 
 // Replace with your local IP address
-const API_URL = 'http://192.168.1.3:8000/farmer';
-const crop_url = 'http://192.168.1.3:8000/crop';
+const API_URL = 'http://192.168.0.107:8000/farmer';
+const crop_url = 'http://192.168.0.107:8000/crop';
 
 export const ApiContext = createContext();
 
