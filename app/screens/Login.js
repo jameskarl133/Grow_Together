@@ -1,12 +1,26 @@
 import React, { useContext, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Image, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
 import Svg, { Path } from 'react-native-svg'; 
 import {ApiContext} from '../../Provider';
 
 export default function Login({ navigation }) {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const context = useContext(ApiContext);
+  
+
+  const handleLogin = async () => {
+    try {
+      const response = await context.login(username, password);
+      navigation.navigate('DrawerNav'); 
+    } catch (error) {
+      Alert.alert('Login Failed', 'Please check your username and password.');
+    }
+  };
+
+
 
   return (
     <View style={styles.container}>
@@ -23,12 +37,17 @@ export default function Login({ navigation }) {
       <Text style={styles.textColor}>Grow Together!</Text>
 
       <View style={styles.inputContainer}>
-        <TextInput placeholder="Username" style={styles.input} />
+        <TextInput placeholder="Username" style={styles.input} 
+           value={username}
+           onChangeText={setUsername}
+        />
         <View style={styles.passwordContainer}>
           <TextInput
             placeholder="Password"
             secureTextEntry={!passwordVisible}
             style={styles.passwordInput}
+            value={password} 
+            onChangeText={setPassword}
           />
           <TouchableOpacity
             onPress={() => setPasswordVisible(!passwordVisible)}
@@ -46,7 +65,7 @@ export default function Login({ navigation }) {
       <View style={styles.buttonContainer}>
         <Button
           title="Login"
-          onPress={() => navigation.navigate('DrawerNav')}
+          onPress={handleLogin}
           color="green"
         />
       </View>
