@@ -1,52 +1,19 @@
 import React, { useContext, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
 import Svg, { Path } from 'react-native-svg'; 
-import { ApiContext } from '../../Provider';
+import {ApiContext} from '../../Provider';
 
 export default function Login({ navigation }) {
-  const [form, setForm] = useState({
-    username: '',
-    password: ''
-  });
   const [passwordVisible, setPasswordVisible] = useState(false);
   const context = useContext(ApiContext);
 
-  const handleLogin = async () => {
-    const { username, password } = form;
-    if (!username || !password) {
-      Alert.alert('Error', 'Please enter both username and password.');
-      return;
-    }
-  
-    try {
-      const response = await context.login(username, password);
-      if (response.status === 200) {
-        navigation.navigate('DrawerNav'); 
-      } else {
-        Alert.alert('Login Failed', 'Incorrect username or password.');
-      }
-    } catch (error) {
-      if (error.response && error.response.status === 401) {
-        Alert.alert('Login Failed', 'Incorrect username or password.');
-      } else {
-        console.error('Login error:', error);
-        Alert.alert('Login Failed', 'An error occurred. Please try again later.');
-      }
-    }
-  };
-
   return (
-    <KeyboardAvoidingView 
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
-      {/* Circles */}
+    <View style={styles.container}>
       <View style={styles.circle1}></View>
       <View style={styles.circle2}></View>
       <View style={styles.circle3}></View>
 
-      {/* Logo */}
       <Image
         source={require('../images/gt-logo-perm1.png')}
         style={styles.logo}
@@ -55,21 +22,13 @@ export default function Login({ navigation }) {
 
       <Text style={styles.textColor}>Grow Together!</Text>
 
-      {/* Input Fields */}
       <View style={styles.inputContainer}>
-        <TextInput
-          placeholder="Username"
-          style={styles.input}
-          value={form.username}
-          onChangeText={(value) => setForm({ ...form, username: value })}
-        />
+        <TextInput placeholder="Username" style={styles.input} />
         <View style={styles.passwordContainer}>
           <TextInput
             placeholder="Password"
             secureTextEntry={!passwordVisible}
             style={styles.passwordInput}
-            value={form.password}
-            onChangeText={(value) => setForm({ ...form, password: value })}
           />
           <TouchableOpacity
             onPress={() => setPasswordVisible(!passwordVisible)}
@@ -84,12 +43,15 @@ export default function Login({ navigation }) {
         </View>
       </View>
 
-      {/* Login Button */}
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <Button
+          title="Login"
+          onPress={() => navigation.navigate('DrawerNav')}
+          color="green"
+        />
+      </View>
 
-      {/* Forgot Password and Sign up Links */}
+      {/* Forgot Password Link */}
       <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
         <Text style={styles.linkText}>Forgot password?</Text>
       </TouchableOpacity>
@@ -98,12 +60,11 @@ export default function Login({ navigation }) {
         <Text style={styles.linkText}>Sign up</Text>
       </TouchableOpacity>
 
-      {/* Footer Wave */}
       <View style={styles.footer}>
         <Svg
           height="100%"
           width="100%"
-          viewBox="0 0 1440 420"
+          viewBox="0 0 1440 420" 
           style={styles.wave}
         >
           <Path
@@ -112,7 +73,7 @@ export default function Login({ navigation }) {
           />
         </Svg>
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 }
 
@@ -125,8 +86,8 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   logo: {
-    width: 150,
-    height: 150,
+    width: 150,  // Adjust the size of the logo
+    height: 150, // Adjust the size of the logo
     marginBottom: 20,
   },
   textColor: {
@@ -165,17 +126,9 @@ const styles = StyleSheet.create({
   eyeIcon: {
     marginLeft: 10,
   },
-  button: {
-    backgroundColor: 'green',
-    paddingVertical: 10,
-    borderRadius: 5,
+  buttonContainer: {
     width: '100%',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
+    marginVertical: 10,
   },
   linkText: {
     color: 'gray',
