@@ -2,14 +2,15 @@ import React, { createContext, useState } from 'react';
 import axios from 'axios';
 
 // Replace with your local IP address
-const API_URL = 'http://192.168.0.107:8000/farmer';
-const crop_url = 'http://192.168.0.107:8000/crop';
+const API_URL = 'http://192.168.1.7:8000/farmer';
+const crop_url = 'http://192.168.1.7:8000/crop';
+const crop_ondb_url = 'http://192.168.1.7:8000/crop/ondb';
 
 export const ApiContext = createContext();
 
 const MyComponent = ({ children }) => {
   const [farmer, setFarmer] = useState(null);
-  
+
   const login = async (username, password) => {
     try {
       const response = await axios.get(`${API_URL}`, {
@@ -55,8 +56,19 @@ const MyComponent = ({ children }) => {
     }
   };
 
+  const fetchCropsOnDb = async () => {
+    try {
+      const response = await axios.get(crop_ondb_url);
+      console.log('Crops fetched successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching crops:', error.message);
+      throw error;
+    }
+  };
+
   return (
-    <ApiContext.Provider value={{ postFarmerData, postCropData, login, }}>
+    <ApiContext.Provider value={{ postFarmerData, postCropData, login, fetchCropsOnDb }}>
       {children}
     </ApiContext.Provider>
   );
