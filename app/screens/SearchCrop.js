@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, TextInput, Button, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native';
+import { View, TextInput, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ApiContext } from '../../Provider';
 import { useFocusEffect } from '@react-navigation/native';
@@ -25,24 +25,19 @@ const SearchCrop = () => {
     }
   };
 
-  const handleSearch = () => {
-    if (cropName.trim()) {
-      alert(`Searching for: ${cropName}`);
-    } else {
-      alert('Please enter a crop name to search');
-    }
-  };
+  // Filter crops based on the cropName (case-insensitive)
+  const filteredCrops = crops.filter(crop =>
+    crop.crop_name.toLowerCase().includes(cropName.toLowerCase())
+  );
 
   const renderCrop = ({ item }) => (
     <View style={styles.cropContainer} key={item._id}>
       <Text style={styles.cropName}>{item.crop_name}</Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button}>
-          {/* Wrap button text inside <Text> component */}
           <Text style={styles.buttonText}>Select</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button}>
-          {/* Wrap button text inside <Text> component */}
           <Text style={styles.buttonText}>View</Text>
         </TouchableOpacity>
       </View>
@@ -56,12 +51,11 @@ const SearchCrop = () => {
           style={styles.textInput}
           placeholder="Type crop name"
           value={cropName}
-          onChangeText={setCropName}
+          onChangeText={setCropName}  // Update cropName as the user types
         />
-        <Button title="Search" onPress={handleSearch} color="green" />
       </View>
       <FlatList
-        data={crops}
+        data={filteredCrops}  // Use the filtered crops
         keyExtractor={(item) => item._id}
         renderItem={renderCrop}
         ListEmptyComponent={
@@ -91,7 +85,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
-    marginRight: 10,
   },
   cropContainer: {
     backgroundColor: 'white',
