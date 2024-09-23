@@ -1,62 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { LinearGradient } from 'expo-linear-gradient'; 
-const MonitorCrop = () => {
-  const [cropData, setCropData] = useState({
-    moistureLevel: 30,
-    waterLevel: 70,
-    temperature: 25,
-  });
+import React, { useContext, useState } from 'react';
+import { View, StyleSheet, Text } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Picker } from '@react-native-picker/picker';
+import { ApiContext } from '../../Provider';
+import { useFocusEffect } from '@react-navigation/native';
 
-  useEffect(() => {
-    const fetchData = () => {
-      setCropData({
-        moistureLevel: 40,
-        waterLevel: 10,
-        temperature: 26,
-      });
-    };
+const PlantedCrops = () => {
+  const [crops, setCrops] = useState([]);
+  const [selectedCrop, setSelectedCrop] = useState('');
+  const { fetchCropsPlanted } = useContext(ApiContext);
 
-    fetchData();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchCrops();
+    }, [])
+  );
 
-  const categorizeLevel = (value) => {
-    if (value <= 30) return 'Low';
-    if (value <= 70) return 'Mid';
-    return 'High';
+  const fetchCrops = async () => {
+    try {
+      const fetchedCrops = await fetchCropsPlanted();
+      setCrops(fetchedCrops);
+    } catch (error) {
+      console.error('Error fetching planted crops:', error.message);
+    }
   };
 
   return (
-    <LinearGradient
-      colors={['#a8e6cf', '#f5f5f5']}
-      style={styles.container}
-    >
+    <LinearGradient colors={['#a8e6cf', '#f5f5f5']} style={styles.container}>
+      {/* Header Text */}
       <Text style={styles.header}>Monitor Crop</Text>
-
-      <View style={styles.statCard}>
-        <Ionicons name="speedometer-outline" size={40} color="#3498db" />
-        <View style={styles.statTextContainer}>
-          <Text style={styles.statLabel}>Moisture Level</Text>
-          <Text style={styles.statValue}>{categorizeLevel(cropData.moistureLevel)}</Text>
-        </View>
+      
+      <Text style={styles.label}>Select a Crop:</Text>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={selectedCrop}
+          onValueChange={(itemValue) => setSelectedCrop(itemValue)}
+          style={styles.picker}
+        >
+          <Picker.Item label="Select a crop..." value="" />
+          {crops.map((crop) => (
+            <Picker.Item key={crop._id} label={crop.crop_name} value={crop.crop_name} />
+          ))}
+        </Picker>
       </View>
-
-      <View style={styles.statCard}>
-        <Ionicons name="water-outline" size={40} color="#1abc9c" />
-        <View style={styles.statTextContainer}>
-          <Text style={styles.statLabel}>Water Level</Text>
-          <Text style={styles.statValue}>{categorizeLevel(cropData.waterLevel)}</Text>
-        </View>
-      </View>
-
-      <View style={styles.statCard}>
-        <Ionicons name="thermometer-outline" size={40} color="#e74c3c" />
-        <View style={styles.statTextContainer}>
-          <Text style={styles.statLabel}>Temperature</Text>
-          <Text style={styles.statValue}>{cropData.temperature}°C</Text>
-        </View>
-      </View>
+      <View><Text>ang mga imonitor na diri kay gikan na sa hardware soooo ill leave it blank nalng sa for now guys</Text></View>
     </LinearGradient>
   );
 };
@@ -64,41 +51,42 @@ const MonitorCrop = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 16,
+    justifyContent: 'flex-start',
   },
+  // Styling for header (Monitor Crop)
   header: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#2c3e50',
-    marginBottom: 30,
+    fontSize: 30,  // Make text large
+    fontWeight: 'bold',  // Bold font for emphasis
+    textAlign: 'center',  // Center align
+    marginBottom: 20,  // Add spacing below
+    color: '#333',  // Optionally, change the color
   },
-  statCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: 15,
-    marginVertical: 10,
-    borderRadius: 15,
+  label: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  pickerContainer: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 4, 
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  statTextContainer: {
-    marginLeft: 15,
+  picker: {
+    height: 50,
+    width: '100%',
   },
-  statLabel: {
-    fontSize: 18,
-    color: '#34495e',
-    marginBottom: 5,
-  },
-  statValue: {
-    fontSize: 20,
+  selectedText: {
+    fontSize: 16,
+    marginTop: 20,
     fontWeight: 'bold',
-    color: '#2c3e50',
   },
 });
 
-export default MonitorCrop;
+export default PlantedCrops;
