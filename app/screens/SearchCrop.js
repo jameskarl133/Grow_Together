@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ApiContext } from '../../Provider';
-import { useFocusEffect } from '@react-navigation/native';  // Import useFocusEffect
+import { useFocusEffect } from '@react-navigation/native';
 
 const SearchCrop = () => {
   const [cropName, setCropName] = useState('');
@@ -13,7 +13,7 @@ const SearchCrop = () => {
   useFocusEffect(
     React.useCallback(() => {
       fetchCrops();
-    }, [])  // Empty dependency array ensures this runs when screen is focused
+    }, [])
   );
 
   const fetchCrops = async () => {
@@ -34,13 +34,15 @@ const SearchCrop = () => {
   };
 
   const renderCrop = ({ item }) => (
-    <View style={styles.cropContainer}>
+    <View style={styles.cropContainer} key={item._id}>
       <Text style={styles.cropName}>{item.crop_name}</Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button}>
+          {/* Wrap button text inside <Text> component */}
           <Text style={styles.buttonText}>Select</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button}>
+          {/* Wrap button text inside <Text> component */}
           <Text style={styles.buttonText}>View</Text>
         </TouchableOpacity>
       </View>
@@ -62,6 +64,10 @@ const SearchCrop = () => {
         data={crops}
         keyExtractor={(item) => item._id}
         renderItem={renderCrop}
+        ListEmptyComponent={
+          // Empty list message wrapped inside <Text>
+          <Text>No crops found</Text>
+        }
       />
     </LinearGradient>
   );
