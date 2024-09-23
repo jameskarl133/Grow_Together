@@ -43,6 +43,7 @@ const PlantedCrops = () => {
           ))}
         </Picker>
       </View>
+      <View><Text>ang mga imonitor na diri kay gikan na sa hardware soooo ill leave it blank nalng sa for now guys</Text></View>
     </LinearGradient>
   );
 };
