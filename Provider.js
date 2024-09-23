@@ -2,32 +2,64 @@ import React, { createContext, useState } from 'react';
 import axios from 'axios';
 
 // Replace with your local IP address
-const API_URL = 'http://192.168.0.107:8000/farmer';
-const crop_url = 'http://192.168.0.107:8000/crop';
-const crop_ondb_url = 'http://192.168.0.107:8000/crop/ondb';
-const crop_planted_url = 'http://192.168.0.107:8000/crop/planted';
+const API_URL = 'http://192.168.1.3:8000/farmer';
+const crop_url = 'http://192.168.1.3:8000/crop';
+const crop_ondb_url = 'http://192.168.1.3:8000/crop/ondb';
+const crop_planted_url = 'http://192.168.1.3:8000/crop/planted';
+const login_url = 'http://192.168.1.3:8000/farmer/login';
 
 export const ApiContext = createContext();
 
 const MyComponent = ({ children }) => {
   const [farmer, setFarmer] = useState(null);
 
-  const login = async (username, password) => {
+  // const loginFarmer = async (username, password) => {
+  //   try {
+  //     const response = await axios.get(login_url, { username, password });
+  //     console.log('Login successful:', response.data);
+  //     setFarmer(response.data.farmer);
+  //     return response.data;
+  //   } catch (error) {
+  //     console.error('Error logging in:', error.message);
+  //     console.log(error.response.data);
+  //     console.log(error.response.status);
+  //     console.log(error.response.headers);
+  //     throw error;
+  //   }
+  // };
+
+  const loginFarmer = async (username, password) => {
     try {
-      const response = await axios.get(`${API_URL}`, {
-        username,
-        password,
+      const response = await axios.get(login_url, {
+        params: { username, password }  
       });
       console.log('Login successful:', response.data);
+      setFarmer(response.data.farmer);
       return response.data;
     } catch (error) {
       console.error('Error logging in:', error.message);
-      if (error.response) {
-        console.log(error.response.data);
-      }
+      console.log(error.response?.data);
+      console.log(error.response?.status);
+      console.log(error.response?.headers);
       throw error;
     }
   };
+//   const loginFarmer = async (username, password) => {
+//     try {
+//         const response = await axios.get(`${API_URL}/login`, {
+//             params: {
+//                 username_input,
+//                 password_input,
+//             },
+//         });
+//         console.log('Login successful:', response.data);
+//         setFarmer(response.data.farmer);
+//         return response.data;
+//     } catch (error) {
+//         console.error('Error logging in:', error.message);
+//         throw error;
+//     }
+// };
 
   const postFarmerData = async (farmerData) => {
     try {
@@ -79,7 +111,7 @@ const MyComponent = ({ children }) => {
     }
   };
   return (
-    <ApiContext.Provider value={{ postFarmerData, postCropData, login, fetchCropsOnDb, fetchCropsPlanted}}>
+    <ApiContext.Provider value={{ postFarmerData, postCropData, fetchCropsOnDb, fetchCropsPlanted, loginFarmer}}>
       {children}
     </ApiContext.Provider>
   );
