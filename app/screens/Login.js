@@ -8,67 +8,16 @@ export default function Login({ navigation }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const { loginFarmer } = useContext(ApiContext);
+  const context = useContext(ApiContext);
   
-<<<<<<< HEAD
   const handleLogin = async () => {
     // Check if fields are empty
     if (!username || !password) {
       Alert.alert('Error', 'Username and password cannot be empty.');
-=======
-
-  // const handleLogin = async () => {
-  //   if (username === '' || password === '') {
-  //     Alert.alert('Error', 'Please fill in both fields.');
-  //     return;
-  //   }
-  
-  //   try {
-  //     console.log('Attempting to log in with:', { username, password });
-  //     const response = await loginFarmer(username, password); 
-  
-  //     if (response && response.username) {
-  //       navigation.navigate('DrawerNav'); // Successful login, navigate to the dashboard
-  //     } else {
-  //       Alert.alert('Login Failed', 'Invalid username or password');
-  //     }
-  //   } catch (error) {
-  //     console.error('Login error:', error);
-  //     Alert.alert('Login Failed', 'An error occurred. Please try again.');
-  //   }
-  // };
-
-
-  // const handleLogin = async () => {
-  //   if (username === '' || password === '') {
-  //     Alert.alert('Error', 'Please fill in both fields.');
-  //     return;
-  //   }
-
-  //   try {
-  //     console.log('Attempting to log in with:', { username, password });
-  //     const response = await loginFarmer(username, password);  // Call loginFarmer from context
-
-  //     if (response && response.farmer) {  // Check if login was successful
-  //       navigation.navigate('DrawerNav');  // Navigate to the dashboard if login is successful
-  //     } else {
-  //       Alert.alert('Login Failed', 'Invalid username or password');
-  //     }
-  //   } catch (error) {
-  //     console.error('Login error:', error);
-  //     Alert.alert('Login Failed', 'An error occurred. Please try again.');
-  //   }
-  // };
-
-const handleLogin = async () => {
-    if (username === '' || password === '') {
-      Alert.alert('Error', 'Please fill in both fields.');
->>>>>>> 7cafb3e6d939d22c9608b8b9b9fa0eb54bea304f
       return;
     }
 
     try {
-<<<<<<< HEAD
       // Call the login function from context
       const result = await context.login(username, password);
       
@@ -85,23 +34,6 @@ const handleLogin = async () => {
     }
   };
 
-=======
-      console.log('Attempting to log in with:', { username, password });
-      const response = await loginFarmer(username, password); 
-
-      if (response && response.farmer) {  
-        navigation.navigate('DrawerNav');  
-      } else {
-        Alert.alert('Login Failed', 'Invalid username or password');
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      Alert.alert('Login Failed', 'An error occurred. Please try again.');
-    }
-  };
-
-
->>>>>>> 7cafb3e6d939d22c9608b8b9b9fa0eb54bea304f
   return (
     <View style={styles.container}>
       <View style={styles.circle1}></View>
