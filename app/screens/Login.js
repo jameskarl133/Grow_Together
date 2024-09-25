@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Image, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; 
 import Svg, { Path } from 'react-native-svg'; 
-import {ApiContext} from '../../Provider';
+import { ApiContext } from '../../Provider';
 
 export default function Login({ navigation }) {
   const [username, setUsername] = useState('');
@@ -10,17 +10,29 @@ export default function Login({ navigation }) {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const context = useContext(ApiContext);
   
-
   const handleLogin = async () => {
+    // Check if fields are empty
+    if (!username || !password) {
+      Alert.alert('Error', 'Username and password cannot be empty.');
+      return;
+    }
+
     try {
-      const response = await context.login(username, password);
-      navigation.navigate('DrawerNav'); 
+      // Call the login function from context
+      const result = await context.login(username, password);
+      
+      // If login is successful, navigate to the main screen
+      if (result && result.access) {
+        navigation.navigate('DrawerNav'); 
+      } else {
+        // If login is unsuccessful, show an error alert
+        Alert.alert('Login Failed', 'Invalid username or password.');
+      }
     } catch (error) {
-      Alert.alert('Login Failed', 'Please check your username and password.');
+      // Handle any other errors during the login process
+      Alert.alert('Login Failed', error.message || 'Please check your username and password.');
     }
   };
-
-
 
   return (
     <View style={styles.container}>
@@ -37,9 +49,11 @@ export default function Login({ navigation }) {
       <Text style={styles.textColor}>Grow Together!</Text>
 
       <View style={styles.inputContainer}>
-        <TextInput placeholder="Username" style={styles.input} 
-           value={username}
-           onChangeText={setUsername}
+        <TextInput 
+          placeholder="Username" 
+          style={styles.input} 
+          value={username}
+          onChangeText={setUsername}
         />
         <View style={styles.passwordContainer}>
           <TextInput
@@ -105,8 +119,8 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   logo: {
-    width: 150,  // Adjust the size of the logo
-    height: 150, // Adjust the size of the logo
+    width: 150,
+    height: 150,
     marginBottom: 20,
   },
   textColor: {

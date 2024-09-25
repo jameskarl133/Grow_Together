@@ -1,5 +1,5 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { View, TextInput, StyleSheet, Text, FlatList, TouchableOpacity } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, TextInput, StyleSheet, Text, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ApiContext } from '../../Provider';
 import { useFocusEffect } from '@react-navigation/native';
@@ -7,9 +7,8 @@ import { useFocusEffect } from '@react-navigation/native';
 const SearchCrop = () => {
   const [cropName, setCropName] = useState('');
   const [crops, setCrops] = useState([]);
-  const { fetchCropsOnDb } = useContext(ApiContext);
+  const { fetchCropsOnDb, handleSelectCrop } = useContext(ApiContext);
 
-  // Fetch crops when the screen is focused
   useFocusEffect(
     React.useCallback(() => {
       fetchCrops();
@@ -25,18 +24,30 @@ const SearchCrop = () => {
     }
   };
 
-  // Filter crops based on the cropName (case-insensitive)
   const filteredCrops = crops.filter(crop =>
     crop.crop_name.toLowerCase().includes(cropName.toLowerCase())
   );
 
+  const handleSelect = async (cropName) => {
+    try {
+      await handleSelectCrop(cropName);
+      await fetchCrops();
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    }
+  };
+
   const renderCrop = ({ item }) => (
-    <View style={styles.cropContainer} key={item._id}>
-      <Text style={styles.cropName}>{item.crop_name}</Text>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+    <View style={styles.row}>
+      <View style={styles.cell}>
+        <Text style={styles.cropName}>{item.crop_name}</Text>
+      </View>
+      <View style={styles.cell}>
+        <TouchableOpacity style={styles.button} onPress={() => handleSelect(item.crop_name)}>
           <Text style={styles.buttonText}>Select</Text>
         </TouchableOpacity>
+      </View>
+      <View style={styles.cell}>
         <TouchableOpacity style={styles.button}>
           <Text style={styles.buttonText}>View</Text>
         </TouchableOpacity>
@@ -51,17 +62,22 @@ const SearchCrop = () => {
           style={styles.textInput}
           placeholder="Type crop name"
           value={cropName}
-          onChangeText={setCropName}  // Update cropName as the user types
+          onChangeText={setCropName}
         />
       </View>
+
+      {/* Header Row
+      <View style={styles.headerRow}>
+        <Text style={styles.headerText}>Crop Name</Text>
+        <Text style={styles.headerText}>Select</Text>
+        <Text style={styles.headerText}>View</Text>
+      </View> */}
+
       <FlatList
-        data={filteredCrops}  // Use the filtered crops
-        keyExtractor={(item) => item._id}
+        data={filteredCrops}
+        keyExtractor={(item) => item._id}  // Unique key
         renderItem={renderCrop}
-        ListEmptyComponent={
-          // Empty list message wrapped inside <Text>
-          <Text>No crops found</Text>
-        }
+        ListEmptyComponent={<Text>No crops found</Text>}
       />
     </LinearGradient>
   );
@@ -86,31 +102,45 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 10,
   },
-  cropContainer: {
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+    paddingVertical: 8,
+    backgroundColor: '#e0f7fa',
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  headerText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    width: '33%',
+    textAlign: 'center',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     backgroundColor: 'white',
     borderRadius: 8,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
     elevation: 2,
+  },
+  cell: {
+    width: '33%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cropName: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
   },
   button: {
-    backgroundColor: 'green',
+    backgroundColor: '#4CAF50',
     paddingVertical: 8,
     paddingHorizontal: 16,
-    borderRadius: 4,
+    borderRadius: 5,
   },
   buttonText: {
     color: 'white',

@@ -44,13 +44,13 @@ export default function SignUp() {
       fname: firstName,
       mname: middleName,
       lname: lastName,
+      field_type: field,
       dob: dob.toString(),
       address: address,
       email: email,
       phno: phoneNumber,
       username: username,
       password: password,
-      field_type: field,
       status: 'active', // or any default status you prefer
     };
     console.log(dob.toString());
