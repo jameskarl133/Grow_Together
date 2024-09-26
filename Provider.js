@@ -1,11 +1,11 @@
 import React, { createContext, useState } from 'react';
 import axios from 'axios';
 
-const farmer_url = 'http://192.168.1.7:8000/farmer';
-const crop_url = 'http://192.168.1.7:8000/crop';
-const crop_ondb_url = 'http://192.168.1.7:8000/crop/ondb';
-const crop_planted_url = 'http://192.168.1.7:8000/crop/planted';
-const farmer_login_url = 'http://192.168.1.7:8000/farmer/login';
+const farmer_url = 'http://192.168.0.107:8000/farmer';
+const crop_url = 'http://192.168.0.107:8000/crop';
+const crop_ondb_url = 'http://192.168.0.107:8000/crop/ondb';
+const crop_planted_url = 'http://192.168.0.107:8000/crop/planted';
+const farmer_login_url = 'http://192.168.0.107:8000/farmer/login';
 
 export const ApiContext = createContext();
 
@@ -93,7 +93,7 @@ const MyComponent = ({ children }) => {
   };
 
   return (
-    <ApiContext.Provider value={{ postFarmerData, postCropData, login, fetchCropsOnDb, handleSelectCrop }}>
+    <ApiContext.Provider value={{ postFarmerData, postCropData, login, fetchCropsOnDb, fetchCropsPlanted, handleSelectCrop }}>
       {children}
     </ApiContext.Provider>
   );
