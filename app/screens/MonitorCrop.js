@@ -1,11 +1,11 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Image, Button } from 'react-native';
+import { View, StyleSheet, Text, Image, Button, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ApiContext } from '../../Provider';
 
 const PlantedCrops = () => {
   const [crops, setCrops] = useState([]);
-  const { fetchCropsPlanted, updateCropStatus } = useContext(ApiContext);
+  const { fetchCropsPlanted, updateCropToHarvest } = useContext(ApiContext);
   const [selectedCrop, setSelectedCrop] = useState(null);
 
   useEffect(() => {
@@ -16,7 +16,12 @@ const PlantedCrops = () => {
     try {
       const fetchedCrops = await fetchCropsPlanted();
       setCrops(fetchedCrops);
-      setSelectedCrop(fetchedCrops[0]);
+
+      if (fetchedCrops.length > 0) {
+        setSelectedCrop(fetchedCrops[0]);
+      } else {
+        setSelectedCrop(null);
+      }
     } catch (error) {
       console.error('Error fetching planted crops:', error.message);
     }
@@ -25,10 +30,22 @@ const PlantedCrops = () => {
   const handleUpdateStatus = async () => {
     if (selectedCrop) {
       try {
-        await updateCropStatus(selectedCrop._id, 'harvested');
+        await updateCropToHarvest(selectedCrop.crop_name);
         console.log(`Crop ${selectedCrop.crop_name} status updated to harvested`);
+        
+        // Show success alert
+        Alert.alert(
+          "Success",
+          `Crop ${selectedCrop.crop_name} has been harvested.`
+        );
+        fetchCrops();
+
       } catch (error) {
         console.error('Error updating crop status:', error.message);
+        Alert.alert(
+          "Error",
+          `Failed to update crop status: ${error.message}`
+        );
       }
     }
   };
@@ -36,23 +53,30 @@ const PlantedCrops = () => {
   return (
     <LinearGradient colors={['#a8e6cf', '#f5f5f5']} style={styles.container}>
       <Text style={styles.header}>Monitor Crop</Text>
-      {selectedCrop && (
-        <View style={styles.cropContainer}>
-          {/* Example Image */}
-          <Image
-            source={{ uri: 'https://via.placeholder.com/50' }}
-            style={styles.image}
-          />
-          <Text style={styles.cropName}>{selectedCrop.crop_name}</Text>
-        </View>
-      )}
 
-      <Text style={styles.infoText}>standby</Text>
-      <Button
-        title="Harvest"
-        onPress={handleUpdateStatus}
-        color="#FF7F50"
-      />
+      {crops.length === 0 ? (
+        <Text style={styles.noCropText}>There's no crop planted on this particular device</Text>
+      ) : (
+        <>
+          {selectedCrop && (
+            <View style={styles.cropContainer}>
+              {/* Example Image */}
+              <Image
+                source={{ uri: 'https://via.placeholder.com/50' }}
+                style={styles.image}
+              />
+              <Text style={styles.crops}>{selectedCrop.crop_name}</Text>
+            </View>
+          )}
+
+          <Text style={styles.infoText}>standby</Text>
+          <Button
+            title="Harvest"
+            onPress={handleUpdateStatus}
+            color="#FF7F50"
+          />
+        </>
+      )}
     </LinearGradient>
   );
 };
@@ -88,7 +112,7 @@ const styles = StyleSheet.create({
     height: 50,
     marginRight: 16,
   },
-  cropName: {
+  crops: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#333',

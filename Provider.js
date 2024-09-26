@@ -64,6 +64,27 @@ const MyComponent = ({ children }) => {
     }
   };
 
+  const updateCropToHarvest = async (cropName) => {
+    try {
+      const response = await axios.put(`${crop_url}/${cropName}/harvested`);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating crop:', error.message);
+      throw error;
+    }
+  };
+
+  const handleUpdateStatus = async () => {
+    if (selectedCrop) {
+      try {
+        await updateCropToHarvest(selectedCrop.crop_name);
+        console.log(`Crop ${selectedCrop.crop_name} status updated to harvested`);
+      } catch (error) {
+        console.error('Error updating crop status:', error.message);
+      }
+    }
+  };
+
   const updateCropToPlanted = async (cropName) => {
     try {
       const response = await axios.put(`${crop_url}/${cropName}/planted`);
@@ -93,7 +114,7 @@ const MyComponent = ({ children }) => {
   };
 
   return (
-    <ApiContext.Provider value={{ postFarmerData, postCropData, login, fetchCropsOnDb, fetchCropsPlanted, handleSelectCrop }}>
+    <ApiContext.Provider value={{ postFarmerData, postCropData, login, fetchCropsOnDb, fetchCropsPlanted, handleSelectCrop, updateCropToHarvest, handleUpdateStatus }}>
       {children}
     </ApiContext.Provider>
   );
