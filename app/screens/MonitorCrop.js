@@ -2,15 +2,18 @@ import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, Text, Image, Button, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ApiContext } from '../../Provider';
+import { useFocusEffect } from '@react-navigation/native';
 
 const PlantedCrops = () => {
   const [crops, setCrops] = useState([]);
   const { fetchCropsPlanted, updateCropToHarvest } = useContext(ApiContext);
   const [selectedCrop, setSelectedCrop] = useState(null);
 
-  useEffect(() => {
-    fetchCrops();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchCrops();
+    }, [])
+  );
 
   const fetchCrops = async () => {
     try {

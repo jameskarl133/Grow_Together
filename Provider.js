@@ -1,11 +1,11 @@
 import React, { createContext, useState } from 'react';
 import axios from 'axios';
 
-const farmer_url = 'http://192.168.0.107:8000/farmer';
-const crop_url = 'http://192.168.0.107:8000/crop';
-const crop_ondb_url = 'http://192.168.0.107:8000/crop/ondb';
-const crop_planted_url = 'http://192.168.0.107:8000/crop/planted';
-const farmer_login_url = 'http://192.168.0.107:8000/farmer/login';
+const farmer_url = 'http://192.168.230.6:8000/farmer';
+const crop_url = 'http://192.168.230.6:8000/crop';
+const crop_harvested_url = 'http://192.168.230.6:8000/crop/harvested';
+const crop_planted_url = 'http://192.168.230.6:8000/crop/planted';
+const farmer_login_url = 'http://192.168.230.6:8000/farmer/login';
 
 export const ApiContext = createContext();
 
@@ -44,9 +44,9 @@ const MyComponent = ({ children }) => {
     }
   };
 
-  const fetchCropsOnDb = async () => {
+  const fetchCropsHarvested = async () => {
     try {
-      const response = await axios.get(crop_ondb_url);
+      const response = await axios.get(crop_harvested_url);
       return response.data;
     } catch (error) {
       console.error('Error fetching crops:', error.message);
@@ -114,7 +114,14 @@ const MyComponent = ({ children }) => {
   };
 
   return (
-    <ApiContext.Provider value={{ postFarmerData, postCropData, login, fetchCropsOnDb, fetchCropsPlanted, handleSelectCrop, updateCropToHarvest, handleUpdateStatus }}>
+    <ApiContext.Provider value={{ postFarmerData, 
+    postCropData, 
+    login, 
+    fetchCropsHarvested, 
+    fetchCropsPlanted, 
+    handleSelectCrop, 
+    updateCropToHarvest, 
+    handleUpdateStatus }}>
       {children}
     </ApiContext.Provider>
   );

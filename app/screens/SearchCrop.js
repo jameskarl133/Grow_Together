@@ -7,7 +7,7 @@ import { useFocusEffect } from '@react-navigation/native';
 const SearchCrop = () => {
   const [cropName, setCropName] = useState('');
   const [crops, setCrops] = useState([]);
-  const { fetchCropsOnDb, handleSelectCrop } = useContext(ApiContext);
+  const { fetchCropsHarvested, handleSelectCrop } = useContext(ApiContext);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -17,7 +17,7 @@ const SearchCrop = () => {
 
   const fetchCrops = async () => {
     try {
-      const fetchedCrops = await fetchCropsOnDb();
+      const fetchedCrops = await fetchCropsHarvested();
       setCrops(fetchedCrops);
     } catch (error) {
       console.error('Error fetching crops:', error.message);
@@ -75,7 +75,7 @@ const SearchCrop = () => {
 
       <FlatList
         data={filteredCrops}
-        keyExtractor={(item) => item._id}  // Unique key
+        key={(item) => item._id}  // Unique key
         renderItem={renderCrop}
         ListEmptyComponent={<Text>No crops found</Text>}
       />
