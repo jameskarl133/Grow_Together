@@ -6,26 +6,26 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ApiContext } from '../../Provider';
 
 export default function AddCrop() {
-  const [image, setImage] = useState(null);
+  // const [image, setImage] = useState(null);
   const [plantName, setPlantName] = useState('');
   const [soilType, setSoilType] = useState('');
-  const [soilDescription, setSoilDescription] = useState('');
+  // const [soilDescription, setSoilDescription] = useState('');
   const [moistureLevel, setMoistureLevel] = useState('');
   const [temperature, setTemperature] = useState('');
   const { postCropData } = useContext(ApiContext);
 
-  const chooseImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [2, 2],
-      quality: 1,
-    });
+  // const chooseImage = async () => {
+  //   let result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //     allowsEditing: true,
+  //     aspect: [2, 2],
+  //     quality: 1,
+  //   });
 
-    if (!result.canceled) {
-      setImage(result.assets[0].uri);
-    }
-  };
+  //   if (!result.canceled) {
+  //     setImage(result.assets[0].uri);
+  //   }
+  // };
 
 
 
@@ -34,10 +34,10 @@ export default function AddCrop() {
       crop_name: plantName,
       // crop_image: crimg,
       crop_soil: soilType,
-      crop_soil_desc: soilDescription,
+      // crop_soil_desc: soilDescription,
       crop_moisture: moistureLevel,
       crop_temp: temperature.toString(),
-      crop_status: 'ondb', //default
+      crop_status: 'harvested', //default
       // crop_water_duration:,
       // crop_created_at: 
       // crop_updated_at:
@@ -56,13 +56,13 @@ export default function AddCrop() {
       style={styles.container}
     >
       <Text style={styles.textColor}>Add Crop</Text>
-      <TouchableOpacity onPress={chooseImage} style={styles.imagePicker}>
+      {/* <TouchableOpacity onPress={chooseImage} style={styles.imagePicker}>
         {image ? (
           <Image source={{ uri: image }} style={styles.image} />
         ) : (
           <Text style={styles.imagePlaceholder}>Add Crop Photo</Text>
         )}
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       
       <TextInput
         placeholder="Plant Name"
@@ -78,21 +78,21 @@ export default function AddCrop() {
           onValueChange={(itemValue) => setSoilType(itemValue)}
         >
           <Picker.Item label="Select Soil Type:" value="" enabled={false}/>
-          <Picker.Item label="Silt Soil" value="silt_soil" />
-          <Picker.Item label="Loamy Soil" value="loamy_soil" />
-          <Picker.Item label="Clay Soil" value="clay_soil" />
-          <Picker.Item label="Sandy Soil" value="sandy_soil" />
+          <Picker.Item label="Silt Soil" value="Silt Soil" />
+          <Picker.Item label="Loamy Soil" value="Loamy Soil" />
+          <Picker.Item label="Clay Soil" value="Clay Soil" />
+          <Picker.Item label="Sandy Soil" value="Sandy Soil" />
         </Picker>
       </View>
 
-      <TextInput
+      {/* <TextInput
         placeholder="Soil Description"
         style={[styles.input, styles.textArea]}
         value={soilDescription}
         onChangeText={setSoilDescription}
         multiline={true}
         numberOfLines={4}
-      />
+      /> */}
 
       {/* Moisture Level Picker */}
       <View style={styles.pickerContainer}>
@@ -116,7 +116,7 @@ export default function AddCrop() {
         keyboardType="numeric"
       />
 
-      <Button title="Add Crop" onPress={handleAddCrop} />
+      <Button title="Add Crop" onPress={handleAddCrop} color="green" />
     </LinearGradient>
   );
 }
