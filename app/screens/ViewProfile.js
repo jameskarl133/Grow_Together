@@ -1,14 +1,51 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ApiContext } from '../../Provider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActivityIndicator } from 'react-native';
+
 
 const ViewProfile = ({ navigation }) => {
-  // Function to handle profile update
+  const { viewFarmerProfile } = useContext(ApiContext);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+        try {
+            const farmerId = await AsyncStorage.getItem('farmerId'); 
+            if (farmerId) {
+                const profileData = await viewFarmerProfile(farmerId);
+                console.log('Profile Data:', profileData);
+                setProfile(profileData); 
+            } else {
+                console.error('Farmer ID not found in AsyncStorage');
+            }
+        } catch (error) {
+            console.error('Error fetching profile:', error.message);
+        } finally {
+            setLoading(false); 
+        }
+    };
+
+    fetchProfile(); 
+  }, [viewFarmerProfile]);
+
+
   const handleUpdateProfile = () => {
     // Navigate to the update profile screen or open a modal
     navigation.navigate('UpdateProfile'); // Assuming you have an UpdateProfile screen
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="green" />
+      </View>
+    );
+  }
 
   return (
     <LinearGradient
@@ -25,7 +62,7 @@ const ViewProfile = ({ navigation }) => {
 
           {/* Name */}
           <View style={styles.nameContainer}>
-            <Text style={styles.name}>Yap, Christian Noel V.</Text>
+            <Text style={styles.name}>{profile?.fname || 'Name not available'}</Text>
           </View>
         </View>
 
@@ -38,19 +75,19 @@ const ViewProfile = ({ navigation }) => {
         <View style={styles.detailsContainer}>
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Dob:</Text>
-            <Text style={styles.detailValue}>December 7, 2002</Text>
+            <Text style={styles.detailValue}>{profile?.dob || 'Date of birth not available'}</Text>
           </View>
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Address:</Text>
-            <Text style={styles.detailValue}>Casuntingan, Mandaue City, Cebu</Text>
+            <Text style={styles.detailValue}>{profile?.address || 'Address not available'}</Text>
           </View>
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Email:</Text>
-            <Text style={styles.detailValue}>christiannoelyap621@gmail.com</Text>
+            <Text style={styles.detailValue}>{profile?.email || 'Email not available'}</Text>
           </View>
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Phone Number:</Text>
-            <Text style={styles.detailValue}>09226240769</Text>
+            <Text style={styles.detailValue}>{profile?.phno || 'Phone number not available'}</Text>
           </View>
         </View>
       </View>

@@ -1,12 +1,14 @@
 import React, { createContext, useState } from 'react';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const farmer_url = 'http://192.168.0.107:8000/farmer';
-const crop_url = 'http://192.168.0.107:8000/crop';
-const crop_harvested_url = 'http://192.168.0.107:8000/crop/harvested';
-const crop_planted_url = 'http://192.168.0.107:8000/crop/planted';
-const farmer_login_url = 'http://192.168.0.107:8000/farmer/login';
-const crop_log_url = 'http://192.168.0.107:8000/crop_log';
+const farmer_url = 'http://192.168.1.3:8000/farmer';
+const crop_url = 'http://192.168.1.3:8000/crop';
+const crop_harvested_url = 'http://192.168.1.3:8000/crop/harvested';
+const crop_planted_url = 'http://192.168.1.3:8000/crop/planted';
+const farmer_login_url = 'http://192.168.1.3:8000/farmer/login';
+const crop_log_url = 'http://192.168.1.3:8000/crop_log';
+const farmer_profile_url = 'http://192.168.1.3:8000/farmer/profile';
 
 export const ApiContext = createContext();
 
@@ -16,12 +18,24 @@ const MyComponent = ({ children }) => {
   const login = async (username, password) => {
     try {
       const response = await axios.get(farmer_login_url, { params: { username, password } });
+      setFarmer(response.data.farmer);
+      await AsyncStorage.setItem('farmerId', response.data.farmer.id); 
       return response.data;
     } catch (error) {
       if (error.response && error.response.status === 401) {
         throw new Error('Invalid username or password.');
       }
       throw new Error('Error logging in: ' + error.message);
+    }
+  };
+
+  const viewFarmerProfile = async (farmerId) => {
+    try {
+      const response = await axios.get(farmer_profile_url, { params: { farmer_id: farmerId } });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching farmer profile:', error.message);
+      throw error;
     }
   };
 
@@ -138,6 +152,7 @@ const updateCropLog = async (cropName) => {
     <ApiContext.Provider value={{ postFarmerData, 
     postCropData, 
     login, 
+    viewFarmerProfile,
     fetchCropsHarvested, 
     fetchCropsPlanted, 
     handleSelectCrop, 
