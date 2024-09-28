@@ -1,38 +1,62 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-
-const logsData = [
-  { id: '1', cropId: 'C001', cropName: 'Tomato', plantedDate: '2024-09-01', harvestedDate: '2024-10-01' },
-  { id: '2', cropId: 'C002', cropName: 'Corn', plantedDate: '2024-08-15', harvestedDate: '2024-09-15' },
-  { id: '3', cropId: 'C003', cropName: 'Eggplant', plantedDate: '2024-08-15', harvestedDate: '2024-10-15' }
-];
+import { ApiContext } from '../../Provider';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Logs = () => {
+  const [logs, setLogs] = useState([]);
+  const [loading, setLoading] = useState(true); // To manage loading state
+  const { fetchCropLogs } = useContext(ApiContext);
+
+  // UseFocusEffect ensures the data is re-fetched when the screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      const loadLogs = async () => {
+        try {
+          const fetchedLogs = await fetchCropLogs();
+          setLogs(fetchedLogs);
+        } catch (error) {
+          console.error('Error fetching crop logs:', error.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+      loadLogs();
+    }, [])
+  );
+
   const renderLogItem = ({ item }) => (
     <View style={styles.logItem}>
-      <Text style={styles.detail}>Log ID: {item.id}</Text>
-      <Text style={styles.detail}>Crop ID: {item.cropId}</Text>
-      <Text style={styles.detail}>Crop: {item.cropName}</Text>
-      <Text style={styles.detail}>Planted Date: {item.plantedDate}</Text>
-      <Text style={styles.detail}>Harvested Date: {item.harvestedDate}</Text>
+      <Text style={styles.detail}>Crop: {item.crop_name}</Text>
+      <Text style={styles.detail}>Planted Date: {item.crop_date_planted}</Text>
+      <Text style={styles.detail}>Harvested Date: {item.crop_date_harvested ? item.crop_date_harvested : 'Not harvested yet'}</Text>
     </View>
   );
 
+  // If data is still loading, show the loading indicator
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="green" />
+      </View>
+    );
+  }
+
   return (
     <LinearGradient
-      // Add LinearGradient for background
-      colors={['#a8e6cf', '#f5f5f5']} // Light green to light gray
+      colors={['#a8e6cf', '#f5f5f5']}
       style={styles.container}
     >
-    <View style={styles.container}>
-      <Text style={styles.title}>Crop Logs</Text>
-      <FlatList
-        data={logsData}
-        renderItem={renderLogItem}
-        keyExtractor={(item) => item.id}
-      />
-    </View>
+      <View style={styles.container}>
+        <Text style={styles.title}>Crop Logs</Text>
+        <FlatList
+          data={logs}
+          renderItem={renderLogItem}
+          key={(item, index) => item._id ? item._id.toString() : index.toString()} // Fallback to index if _id is missing
+          ListEmptyComponent={<Text>No crop logs found</Text>}
+        />
+      </View>
     </LinearGradient>
   );
 };
@@ -42,7 +66,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
     padding: 20,
-    
   },
   title: {
     fontSize: 24,
@@ -68,6 +91,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'black',
     marginBottom: 5,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
