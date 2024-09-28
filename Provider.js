@@ -1,12 +1,12 @@
 import React, { createContext, useState } from 'react';
 import axios from 'axios';
 
-const farmer_url = 'http://192.168.1.7:8000/farmer';
-const crop_url = 'http://192.168.1.7:8000/crop';
-const crop_harvested_url = 'http://192.168.1.7:8000/crop/harvested';
-const crop_planted_url = 'http://192.168.1.7:8000/crop/planted';
-const farmer_login_url = 'http://192.168.1.7:8000/farmer/login';
-const crop_log_url = 'http://192.168.1.7:8000/crop_log';
+const farmer_url = 'http://192.168.0.107:8000/farmer';
+const crop_url = 'http://192.168.0.107:8000/crop';
+const crop_harvested_url = 'http://192.168.0.107:8000/crop/harvested';
+const crop_planted_url = 'http://192.168.0.107:8000/crop/planted';
+const farmer_login_url = 'http://192.168.0.107:8000/farmer/login';
+const crop_log_url = 'http://192.168.0.107:8000/crop_log';
 
 export const ApiContext = createContext();
 
@@ -124,6 +124,16 @@ const MyComponent = ({ children }) => {
     }
   };
 
+const updateCropLog = async (cropName) => {
+  try {
+    const response = await axios.put(`${crop_log_url}/${cropName}/harvested`);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating crop log:', error.message);
+    throw error;
+  }
+};
+
   return (
     <ApiContext.Provider value={{ postFarmerData, 
     postCropData, 
@@ -133,7 +143,8 @@ const MyComponent = ({ children }) => {
     handleSelectCrop, 
     updateCropToHarvest, 
     handleUpdateStatus,
-    fetchCropLogs }}>
+    fetchCropLogs,
+    updateCropLog }}>
       {children}
     </ApiContext.Provider>
   );
