@@ -6,7 +6,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 const PlantedCrops = () => {
   const [crops, setCrops] = useState([]);
-  const { fetchCropsPlanted, updateCropToHarvest } = useContext(ApiContext);
+  const { fetchCropsPlanted, updateCropToHarvest, updateCropLog } = useContext(ApiContext);
   const [selectedCrop, setSelectedCrop] = useState(null);
 
   useFocusEffect(
@@ -32,26 +32,29 @@ const PlantedCrops = () => {
 
   const handleUpdateStatus = async () => {
     if (selectedCrop) {
-      try {
-        await updateCropToHarvest(selectedCrop.crop_name);
-        console.log(`Crop ${selectedCrop.crop_name} status updated to harvested`);
-        
-        // Show success alert
-        Alert.alert(
-          "Success",
-          `Crop ${selectedCrop.crop_name} has been harvested.`
-        );
-        fetchCrops();
+        try {
+            await updateCropToHarvest(selectedCrop.crop_name);
+            console.log(`Crop ${selectedCrop.crop_name} status updated to harvested`);
 
-      } catch (error) {
-        console.error('Error updating crop status:', error.message);
-        Alert.alert(
-          "Error",
-          `Failed to update crop status: ${error.message}`
-        );
-      }
+            await updateCropLog(selectedCrop.crop_name);
+            console.log(`Crop log for ${selectedCrop.crop_name} updated with harvest date`);
+
+            Alert.alert(
+                "Success",
+                `Crop ${selectedCrop.crop_name} has been harvested.`
+            );
+
+            fetchCrops();
+
+        } catch (error) {
+            console.error('Error updating crop status:', error.message);
+            Alert.alert(
+                "Error",
+                `Failed to update crop status: ${error.message}`
+            );
+        }
     }
-  };
+};
 
   return (
     <LinearGradient colors={['#a8e6cf', '#f5f5f5']} style={styles.container}>
@@ -63,7 +66,6 @@ const PlantedCrops = () => {
         <>
           {selectedCrop && (
             <View style={styles.cropContainer}>
-              {/* Example Image */}
               <Image
                 source={{ uri: 'https://via.placeholder.com/50' }}
                 style={styles.image}
