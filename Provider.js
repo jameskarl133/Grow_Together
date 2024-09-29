@@ -39,6 +39,16 @@ const MyComponent = ({ children }) => {
     }
   };
 
+  const updateFarmerProfile = async (farmerId, profileData) => {
+    try {
+      const response = await axios.put(`${farmer_url}/${farmerId}`, profileData);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating farmer profile:', error.message);
+      throw error;
+    }
+  };
+
   const postFarmerData = async (farmerData) => {
     try {
       const response = await axios.post(farmer_url, farmerData);
@@ -153,6 +163,7 @@ const updateCropLog = async (cropName) => {
     postCropData, 
     login, 
     viewFarmerProfile,
+    updateFarmerProfile,
     fetchCropsHarvested, 
     fetchCropsPlanted, 
     handleSelectCrop, 
