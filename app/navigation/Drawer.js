@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -9,18 +9,42 @@ import ViewProfile from '../screens/ViewProfile';
 import Logs from '../screens/logs';
 import AddCrop from '../screens/AddCrop';
 import SetSched from '../screens/SetSched';
+import { ApiContext } from '../../Provider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Drawer = createDrawerNavigator();
 
 // Custom drawer content component
 function CustomDrawerContent(props) {
+  const { viewFarmerProfile } = useContext(ApiContext);
+  const [farmerName, setFarmerName] = useState('Loading...');
+
+  useEffect(() => {
+    const fetchFarmerName = async () => {
+      try {
+        const farmerId = await AsyncStorage.getItem('farmerId');
+        if (farmerId) {
+          const profileData = await viewFarmerProfile(farmerId);
+          setFarmerName(profileData.fname || 'Unknown Farmer');
+        } else {
+          setFarmerName('No Farmer ID Found');
+        }
+      } catch (error) {
+        console.error('Error fetching farmer name:', error.message);
+        setFarmerName('Error loading farmer');
+      }
+    };
+
+    fetchFarmerName();
+  }, [viewFarmerProfile]);
+
   return (
     <DrawerContentScrollView {...props}>
       <View style={styles.drawerContainer}>
         {/* Farmer Profile Section */}
         <View style={styles.profileSection}>
           <Ionicons name="person-circle-outline" size={50} color="black" />
-          <Text style={styles.farmerName}>Yap</Text>
+          <Text style={styles.farmerName}>{farmerName}</Text>
         </View>
         <View style={styles.line} />
         <DrawerItem
