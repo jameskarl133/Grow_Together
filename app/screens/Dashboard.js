@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
-import Svg, { Path } from 'react-native-svg'; 
+import { StyleSheet, Text, View } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
+import { Calendar } from 'react-native-calendars'; // Import the Calendar component
 
-export default function Dashboard({ navigation }) {
+export default function Dashboard() {
   return (
     <View style={styles.container}>
       <View style={styles.circle1}></View>
@@ -11,13 +12,25 @@ export default function Dashboard({ navigation }) {
 
       <Text style={styles.title}>Welcome to Grow Together!</Text>
       <Text style={styles.subtitle}>We're excited to help you grow.</Text>
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Add Crop"
-          onPress={() => navigation.navigate('AddCrop')}
-          color="green"
-        />
-      </View>
+
+      <Calendar
+        // Specify the initial date
+        current={new Date().toISOString().split('T')[0]}
+        // Customize the calendar style
+        style={styles.calendar}
+        theme={{
+          backgroundColor: 'transparent', // Set calendar background to transparent
+          calendarBackground: 'transparent', // Make calendar background transparent
+          textSectionTitleColor: 'black',
+          selectedDayBackgroundColor: 'green',
+          selectedDayTextColor: 'white',
+          todayTextColor: 'red',
+          dayTextColor: 'black',
+          textDisabledColor: 'gray',
+          monthTextColor: 'black',
+          indicatorColor: 'green',
+        }}
+      />
 
       <View style={styles.footer}>
         <Svg
@@ -27,7 +40,7 @@ export default function Dashboard({ navigation }) {
           style={styles.wave}
         >
           <Path
-            fill="#4CAF50" 
+            fill="#4CAF50"
             d="M0,224L30,202.7C60,181,120,139,180,117.3C240,96,300,96,360,101.3C420,107,480,117,540,112C600,107,660,85,720,74.7C780,64,840,64,900,80C960,96,1020,128,1080,128C1140,128,1200,96,1260,96C1320,96,1380,128,1410,144L1440,160L1440,320L1410,320C1380,320,1320,320,1260,320C1200,320,1140,320,1080,320C1020,320,960,320,900,320C840,320,780,320,720,320C660,320,600,320,540,320C480,320,420,320,360,320C300,320,240,320,180,320C120,320,60,320,30,320L0,320Z"
           />
         </Svg>
@@ -40,8 +53,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center',  // Center horizontally
+    justifyContent: 'center', // Center vertically
     padding: 20,
   },
   title: {
@@ -55,9 +68,21 @@ const styles = StyleSheet.create({
     color: 'gray',
     marginBottom: 20,
   },
-  buttonContainer: {
-    marginTop: 20,
-    width: '80%',
+  calendar: {
+    width: '100%',
+    marginBottom: 20, // Space between calendar and footer
+    backgroundColor: 'transparent', // Ensure the calendar has a transparent background
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    width: '200%',
+    height: 140,
+  },
+  wave: {
+    position: 'absolute',
+    bottom: 0,
+    height: '200%',
   },
   circle1: {
     position: 'absolute',
@@ -89,16 +114,4 @@ const styles = StyleSheet.create({
     backgroundColor: 'lightgreen',
     zIndex: -1,
   },
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    width: '200%',
-    height: 140, 
-  },
-  wave: {
-    position: 'absolute',
-    bottom: 0,
-    height: '200%',
-  },
 });
-
