@@ -60,103 +60,106 @@ const ViewProfile = () => {
 
   return (
     <LinearGradient colors={['#a8e6cf', '#f5f5f5']} style={styles.container}>
-      <View style={styles.profileContainer}>
-        <Ionicons name="person-circle-outline" size={120} color="green" />
-        <View style={styles.infoContainer}>
-          <Text style={styles.name}>{profile.fname}</Text>
-          <Text style={styles.detail}>DOB: {profile.dob}</Text>
-          <Text style={styles.detail}>Address: {profile.address}</Text>
-          <Text style={styles.detail}>Email: {profile.email}</Text>
-          <Text style={styles.detail}>Phone: {profile.phno}</Text>
-        </View>
-        {/* Update Profile Icon */}
-        <TouchableOpacity onPress={handleUpdateProfileIcon} style={styles.editIcon}>
-          <Ionicons name="create-outline" size={30} color="green" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Update Profile Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-              <Text style={styles.modalTitle}>Update Profile</Text>
-
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Name:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={profile.fname}
-                  onChangeText={(text) => setProfile({ ...profile, fname: text })}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Date of Birth:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={profile.dob}
-                  onChangeText={(text) => setProfile({ ...profile, dob: text })}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Address:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={profile.address}
-                  onChangeText={(text) => setProfile({ ...profile, address: text })}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Email:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={profile.email}
-                  onChangeText={(text) => setProfile({ ...profile, email: text })}
-                  keyboardType="email-address"
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Phone Number:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={profile.phno}
-                  onChangeText={(text) => setProfile({ ...profile, phno: text })}
-                  keyboardType="phone-pad"
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Username:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={profile.username}
-                  onChangeText={(text) => setProfile({ ...profile, username: text })}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <Text style={styles.label}>Password:</Text>
-                <TextInput
-                  style={styles.input}
-                  value={profile.password}
-                  onChangeText={(text) => setProfile({ ...profile, password: text })}
-                />
-              </View>
-
-              <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
-                <Text style={styles.buttonText}>Update Profile</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
-                <Text style={styles.buttonText}>Cancel</Text>
-              </TouchableOpacity>
-            </ScrollView>
+      {/* White container for all content */}
+      <View style={styles.whiteContainer}>
+        <View style={styles.profileContainer}>
+          <Ionicons name="person-circle-outline" size={120} color="green" />
+          <View style={styles.infoContainer}>
+            <Text style={styles.name}>{profile.fname}</Text>
+            <Text style={styles.detail}>Birthdate: {profile.dob}</Text>
+            <Text style={styles.detail}>Address: {profile.address}</Text>
+            <Text style={styles.detail}>Email: {profile.email}</Text>
+            <Text style={styles.detail}>Phone: {profile.phno}</Text>
           </View>
+          {/* Update Profile Icon */}
+          <TouchableOpacity onPress={handleUpdateProfileIcon} style={styles.editIcon}>
+            <Ionicons name="create-outline" size={30} color="green" />
+          </TouchableOpacity>
         </View>
-      </Modal>
+
+        {/* Update Profile Modal */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <ScrollView contentContainerStyle={styles.scrollContent}>
+                <Text style={styles.modalTitle}>Update Profile</Text>
+
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Name:</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={profile.fname}
+                    onChangeText={(text) => setProfile({ ...profile, fname: text })}
+                  />
+                </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Date of Birth:</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={profile.dob}
+                    onChangeText={(text) => setProfile({ ...profile, dob: text })}
+                  />
+                </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Address:</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={profile.address}
+                    onChangeText={(text) => setProfile({ ...profile, address: text })}
+                  />
+                </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Email:</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={profile.email}
+                    onChangeText={(text) => setProfile({ ...profile, email: text })}
+                    keyboardType="email-address"
+                  />
+                </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Phone Number:</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={profile.phno}
+                    onChangeText={(text) => setProfile({ ...profile, phno: text })}
+                    keyboardType="phone-pad"
+                  />
+                </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Username:</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={profile.username}
+                    onChangeText={(text) => setProfile({ ...profile, username: text })}
+                  />
+                </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Password:</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={profile.password}
+                    onChangeText={(text) => setProfile({ ...profile, password: text })}
+                  />
+                </View>
+
+                <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
+                  <Text style={styles.buttonText}>Update Profile</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
+                  <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+              </ScrollView>
+            </View>
+          </View>
+        </Modal>
+      </View>
     </LinearGradient>
   );
 };
@@ -166,6 +169,12 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
+  },
+  whiteContainer: {
+    backgroundColor: 'white', // White container
+    borderRadius: 15,         // Rounded corners
+    padding: 20,
+    elevation: 5,             // Shadow for better separation from the background
   },
   profileContainer: {
     flexDirection: 'row',
