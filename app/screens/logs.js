@@ -1,40 +1,52 @@
-import React, { useContext, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ApiContext } from '../../Provider';
 import { useFocusEffect } from '@react-navigation/native';
 
 const Logs = () => {
   const [logs, setLogs] = useState([]);
-  const [loading, setLoading] = useState(true); // To manage loading state
-  const { fetchCropLogs } = useContext(ApiContext);
+  const [loading, setLoading] = useState(true);
+  const { fetchCropLogs, deleteLogsExceptUnharvested } = useContext(ApiContext);
 
-  // UseFocusEffect ensures the data is re-fetched when the screen comes into focus
   useFocusEffect(
     React.useCallback(() => {
-      const loadLogs = async () => {
-        try {
-          const fetchedLogs = await fetchCropLogs();
-          setLogs(fetchedLogs);
-        } catch (error) {
-          console.error('Error fetching crop logs:', error.message);
-        } finally {
-          setLoading(false);
-        }
-      };
       loadLogs();
     }, [])
   );
+
+  const loadLogs = async () => {
+    try {
+      const fetchedLogs = await fetchCropLogs();
+      setLogs(fetchedLogs);
+    } catch (error) {
+      console.error('Error fetching crop logs:', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    try {
+      const response = await deleteLogsExceptUnharvested();
+      Alert.alert('Success', response.message);
+      // Reload logs after deletion
+      await loadLogs();
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    }
+  };
 
   const renderLogItem = ({ item }) => (
     <View style={styles.logItem}>
       <Text style={styles.detail}>Crop: {item.crop_name}</Text>
       <Text style={styles.detail}>Planted Date: {item.crop_date_planted}</Text>
-      <Text style={styles.detail}>Harvested Date: {item.crop_date_harvested ? item.crop_date_harvested : 'Not harvested yet'}</Text>
+      <Text style={styles.detail}>
+        Harvested Date: {item.crop_date_harvested ? item.crop_date_harvested : 'Not harvested yet'}
+      </Text>
     </View>
   );
 
-  // If data is still loading, show the loading indicator
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -44,18 +56,18 @@ const Logs = () => {
   }
 
   return (
-    <LinearGradient
-      colors={['#a8e6cf', '#f5f5f5']}
-      style={styles.container}
-    >
+    <LinearGradient colors={['#a8e6cf', '#f5f5f5']} style={styles.container}>
       <View style={styles.container}>
         <Text style={styles.title}>Crop Logs</Text>
         <FlatList
           data={logs}
           renderItem={renderLogItem}
-          key={(item, index) => item._id ? item._id.toString() : index.toString()} // Fallback to index if _id is missing
+          key={(item) => item._id}
           ListEmptyComponent={<Text>No crop logs found</Text>}
         />
+        <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteAll}>
+          <Text style={styles.deleteButtonText}>Delete All</Text>
+        </TouchableOpacity>
       </View>
     </LinearGradient>
   );
@@ -96,6 +108,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  deleteButton: {
+    backgroundColor: 'red',
+    padding: 15,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  deleteButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
 
