@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Dashboard from '../screens/Dashboard';
@@ -9,10 +9,18 @@ import ViewProfile from '../screens/ViewProfile';
 import Logs from '../screens/logs';
 import AddCrop from '../screens/AddCrop';
 import SetSched from '../screens/SetSched';
-import { ApiContext } from '../../Provider';
+import Notification from '../screens/Notification';
+import { ApiContext } from '../../Provider'; // Adjust according to your Provider path
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Drawer = createDrawerNavigator();
+
+// Custom header component for notification icon
+const HeaderWithNotification = ({ navigation }) => (
+  <TouchableOpacity onPress={() => navigation.navigate('Notification')}>
+    <Ionicons name="notifications-outline" size={30} color="black" style={{ marginRight: 15 }} />
+  </TouchableOpacity>
+);
 
 // Custom drawer content component
 function CustomDrawerContent(props) {
@@ -41,7 +49,6 @@ function CustomDrawerContent(props) {
   return (
     <DrawerContentScrollView {...props}>
       <View style={styles.drawerContainer}>
-        {/* Farmer Profile Section */}
         <View style={styles.profileSection}>
           <Ionicons name="person-circle-outline" size={50} color="black" />
           <Text style={styles.farmerName}>{farmerName}</Text>
@@ -107,7 +114,10 @@ const DrawerNav = () => {
     <Drawer.Navigator
       initialRouteName="Dashboard"
       drawerContent={(props) => <CustomDrawerContent {...props} />}
-      screenOptions={{ headerTitle: '' }}
+      screenOptions={({ navigation }) => ({
+        headerRight: () => <HeaderWithNotification navigation={navigation} />,
+        headerTitle: '', // Optionally remove title
+      })}
     >
       <Drawer.Screen name="Dashboard" component={Dashboard} />
       <Drawer.Screen name="AddCrop" component={AddCrop} />
@@ -116,11 +126,12 @@ const DrawerNav = () => {
       <Drawer.Screen name="SetSched" component={SetSched} />
       <Drawer.Screen name="ViewProfile" component={ViewProfile} />
       <Drawer.Screen name="Logs" component={Logs} />
+      <Drawer.Screen name="Notification" component={Notification} />
     </Drawer.Navigator>
   );
 };
 
-// Define styles
+// Define styles for the drawer and profile section
 const styles = StyleSheet.create({
   drawerContainer: {
     flex: 1,
