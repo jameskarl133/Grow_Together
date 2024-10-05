@@ -7,8 +7,8 @@ import MonitorCrop from '../screens/MonitorCrop';
 import SearchCrop from '../screens/SearchCrop';
 import ViewProfile from '../screens/ViewProfile';
 import Logs from '../screens/logs';
-import AddCrop from '../screens/AddCrop';
-import SetSched from '../screens/SetSched';
+// import AddCrop from '../screens/AddCrop';
+// import SetSched from '../screens/SetSched';
 import Notification from '../screens/Notification';
 import { ApiContext } from '../../Provider'; // Adjust according to your Provider path
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -61,11 +61,18 @@ function CustomDrawerContent(props) {
             <Ionicons name="home-outline" size={size} color={color} />
           )}
         />
-        <DrawerItem
+        {/* <DrawerItem
           label="Add Crop"
           onPress={() => props.navigation.navigate('AddCrop')}
           icon={({ color, size }) => (
             <Ionicons name="add-circle-outline" size={size} color={color} />
+          )}
+        /> */}
+        <DrawerItem
+          label="Search Crop"
+          onPress={() => props.navigation.navigate('SearchCrop')}
+          icon={({ color, size }) => (
+            <Ionicons name="search-outline" size={size} color={color} />
           )}
         />
         <DrawerItem
@@ -75,20 +82,13 @@ function CustomDrawerContent(props) {
             <Ionicons name="settings-outline" size={size} color={color} />
           )}
         />
-        <DrawerItem
-          label="Search Crop"
-          onPress={() => props.navigation.navigate('SearchCrop')}
-          icon={({ color, size }) => (
-            <Ionicons name="search-outline" size={size} color={color} />
-          )}
-        />
-        <DrawerItem
+        {/* <DrawerItem
           label="Set Schedule"
           onPress={() => props.navigation.navigate('SetSched')}
           icon={({ color, size }) => (
             <Ionicons name="alarm-outline" size={size} color={color} />
           )}
-        />
+        /> */}
         <DrawerItem
           label="View Profile"
           onPress={() => props.navigation.navigate('ViewProfile')}
@@ -120,10 +120,10 @@ const DrawerNav = () => {
       })}
     >
       <Drawer.Screen name="Dashboard" component={Dashboard} />
-      <Drawer.Screen name="AddCrop" component={AddCrop} />
-      <Drawer.Screen name="MonitorCrop" component={MonitorCrop} />
+      {/* <Drawer.Screen name="AddCrop" component={AddCrop} /> */}
       <Drawer.Screen name="SearchCrop" component={SearchCrop} />
-      <Drawer.Screen name="SetSched" component={SetSched} />
+      <Drawer.Screen name="MonitorCrop" component={MonitorCrop} />
+      {/* <Drawer.Screen name="SetSched" component={SetSched} /> */}
       <Drawer.Screen name="ViewProfile" component={ViewProfile} />
       <Drawer.Screen name="Logs" component={Logs} />
       <Drawer.Screen name="Notification" component={Notification} />
