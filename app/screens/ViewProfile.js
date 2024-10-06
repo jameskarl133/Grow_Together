@@ -18,6 +18,7 @@ const ViewProfile = () => {
   });
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showPassword, setShowPassword] = useState(false); 
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -42,6 +43,48 @@ const ViewProfile = () => {
     try {
       const farmerId = await AsyncStorage.getItem('farmerId');
       if (farmerId) {
+        const currentProfileData = await viewFarmerProfile(farmerId);
+        const isPasswordChanged = currentProfileData.password !== profile.password;
+  
+        // If the password is being changed, show a confirmation alert
+        if (isPasswordChanged) {
+          Alert.alert(
+            'Confirm Password Change',
+            'Are you sure you want to change your password?',
+            [
+              {
+                text: 'Cancel',
+                onPress: () => console.log('Password change cancelled'),
+                style: 'cancel'
+              },
+              {
+                text: 'Yes',
+                onPress: async () => {
+                  await updateFarmerProfile(farmerId, profile);
+                  Alert.alert('Success', 'Profile updated successfully!');
+                  setModalVisible(false);
+                }
+              }
+            ]
+          );
+          return;
+        }
+  
+        // Check if any other fields were changed
+        if (
+          currentProfileData.fname === profile.fname &&
+          currentProfileData.dob === profile.dob &&
+          currentProfileData.address === profile.address &&
+          currentProfileData.email === profile.email &&
+          currentProfileData.phno === profile.phno &&
+          currentProfileData.username === profile.username
+        ) {
+          Alert.alert('No changes', 'You didn’t change your profile.');
+          setModalVisible(false);
+          return;
+        }
+
+        // If no password change, update the profile as usual
         await updateFarmerProfile(farmerId, profile);
         Alert.alert('Success', 'Profile updated successfully!');
         setModalVisible(false);
@@ -58,9 +101,12 @@ const ViewProfile = () => {
     setModalVisible(true);
   };
 
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <LinearGradient colors={['#a8e6cf', '#f5f5f5']} style={styles.container}>
-      {/* White container for all content */}
       <View style={styles.whiteContainer}>
         <View style={styles.profileContainer}>
           <Ionicons name="person-circle-outline" size={120} color="green" />
@@ -71,7 +117,6 @@ const ViewProfile = () => {
             <Text style={styles.detail}>Email: {profile.email}</Text>
             <Text style={styles.detail}>Phone: {profile.phno}</Text>
           </View>
-          {/* Update Profile Icon */}
           <TouchableOpacity onPress={handleUpdateProfileIcon} style={styles.editIcon}>
             <Ionicons name="create-outline" size={30} color="green" />
           </TouchableOpacity>
@@ -139,13 +184,21 @@ const ViewProfile = () => {
                     onChangeText={(text) => setProfile({ ...profile, username: text })}
                   />
                 </View>
+
+                {/* Password Input with Eye Icon */}
                 <View style={styles.inputContainer}>
                   <Text style={styles.label}>Password:</Text>
-                  <TextInput
-                    style={styles.input}
-                    value={profile.password}
-                    onChangeText={(text) => setProfile({ ...profile, password: text })}
-                  />
+                  <View style={styles.passwordContainer}>
+                    <TextInput
+                      style={styles.input}
+                      value={profile.password}
+                      onChangeText={(text) => setProfile({ ...profile, password: text })}
+                      secureTextEntry={!showPassword} // Hide or show based on state
+                    />
+                    <TouchableOpacity onPress={toggleShowPassword} style={styles.eyeIcon}>
+                      <Ionicons name={showPassword ? "eye-off-outline" : "eye-outline"} size={24} color="gray" />
+                    </TouchableOpacity>
+                  </View>
                 </View>
 
                 <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
@@ -171,10 +224,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   whiteContainer: {
-    backgroundColor: 'white', // White container
-    borderRadius: 15,         // Rounded corners
+    backgroundColor: 'white',
+    borderRadius: 15,
     padding: 20,
-    elevation: 5,             // Shadow for better separation from the background
+    elevation: 5,
   },
   profileContainer: {
     flexDirection: 'row',
@@ -240,6 +293,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     fontSize: 16,
     width: '100%',
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  eyeIcon: {
+    marginLeft: -30,
+    marginRight: 10,
   },
   updateButton: {
     marginTop: 20,
