@@ -3,6 +3,7 @@ import { View, TextInput, StyleSheet, Text, FlatList, TouchableOpacity, Alert, M
 import { LinearGradient } from 'expo-linear-gradient';
 import { ApiContext } from '../../Provider';
 import { useFocusEffect } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const SearchCrop = () => {
   const [cropName, setCropName] = useState('');
@@ -48,6 +49,8 @@ const SearchCrop = () => {
 
   const renderCrop = ({ item }) => (
     <View style={styles.row}>
+      {/* Add the sprout icon on the left */}
+      <Icon name="sprout" size={30} color="#4CAF50" style={styles.icon} />
       <View style={styles.cell}>
         <Text style={styles.cropName}>{item.crop_name || 'Unnamed Crop'}</Text>
       </View>
@@ -127,6 +130,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
+    alignItems: 'center', // Align items closer together
     justifyContent: 'space-between',
     marginBottom: 16,
     paddingVertical: 12,
@@ -136,7 +140,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   cell: {
-    width: '33%',
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -149,6 +153,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 5,
+    flexShrink: 1, // Allows the button to shrink if needed
   },
   buttonText: {
     color: 'white',
@@ -175,6 +180,9 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: 16,
     marginBottom: 10,
+  },
+  icon: {
+    marginRight: 10,  // Space between the icon and the crop name
   },
 });
 
