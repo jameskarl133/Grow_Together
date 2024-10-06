@@ -1,8 +1,9 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Image, Button, Alert } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, StyleSheet, Text, Button, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ApiContext } from '../../Provider';
 import { useFocusEffect } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const PlantedCrops = () => {
   const [crops, setCrops] = useState([]);
@@ -54,7 +55,7 @@ const PlantedCrops = () => {
             );
         }
     }
-};
+  };
 
   return (
     <LinearGradient colors={['#a8e6cf', '#f5f5f5']} style={styles.container}>
@@ -66,10 +67,8 @@ const PlantedCrops = () => {
         <>
           {selectedCrop && (
             <View style={styles.cropContainer}>
-              <Image
-                source={{ uri: 'https://via.placeholder.com/50' }}
-                style={styles.image}
-              />
+              {/* Replace the Image with the Icon */}
+              <Icon name="sprout" size={50} color="#4CAF50" style={styles.icon} />
               <Text style={styles.crops}>{selectedCrop.crop_name}</Text>
             </View>
           )}
@@ -112,9 +111,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
-  image: {
-    width: 50,
-    height: 50,
+  icon: {
     marginRight: 16,
   },
   crops: {
