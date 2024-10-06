@@ -7,8 +7,6 @@ import MonitorCrop from '../screens/MonitorCrop';
 import SearchCrop from '../screens/SearchCrop';
 import ViewProfile from '../screens/ViewProfile';
 import Logs from '../screens/logs';
-// import AddCrop from '../screens/AddCrop';
-// import SetSched from '../screens/SetSched';
 import Notification from '../screens/Notification';
 import { ApiContext } from '../../Provider'; // Adjust according to your Provider path
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -22,7 +20,7 @@ const HeaderWithNotification = ({ navigation }) => (
   </TouchableOpacity>
 );
 
-// Custom drawer content component
+// Custom drawer content component with logout button
 function CustomDrawerContent(props) {
   const { viewFarmerProfile } = useContext(ApiContext);
   const [farmerName, setFarmerName] = useState('Loading...');
@@ -46,6 +44,18 @@ function CustomDrawerContent(props) {
     fetchFarmerName();
   }, [viewFarmerProfile]);
 
+  // Handle logout action
+  const handleLogout = async () => {
+    try {
+      // Clear AsyncStorage
+      await AsyncStorage.removeItem('farmerId');
+      // Navigate to Login screen
+      props.navigation.navigate('Login');
+    } catch (error) {
+      console.error('Error during logout:', error.message);
+    }
+  };
+
   return (
     <DrawerContentScrollView {...props}>
       <View style={styles.drawerContainer}>
@@ -61,13 +71,6 @@ function CustomDrawerContent(props) {
             <Ionicons name="home-outline" size={size} color={color} />
           )}
         />
-        {/* <DrawerItem
-          label="Add Crop"
-          onPress={() => props.navigation.navigate('AddCrop')}
-          icon={({ color, size }) => (
-            <Ionicons name="add-circle-outline" size={size} color={color} />
-          )}
-        /> */}
         <DrawerItem
           label="Search Crop"
           onPress={() => props.navigation.navigate('SearchCrop')}
@@ -82,13 +85,6 @@ function CustomDrawerContent(props) {
             <Ionicons name="settings-outline" size={size} color={color} />
           )}
         />
-        {/* <DrawerItem
-          label="Set Schedule"
-          onPress={() => props.navigation.navigate('SetSched')}
-          icon={({ color, size }) => (
-            <Ionicons name="alarm-outline" size={size} color={color} />
-          )}
-        /> */}
         <DrawerItem
           label="View Profile"
           onPress={() => props.navigation.navigate('ViewProfile')}
@@ -104,6 +100,15 @@ function CustomDrawerContent(props) {
           )}
         />
         <View style={styles.line} />
+        {/* Logout button at the bottom */}
+        <DrawerItem
+          label="Logout"
+          onPress={handleLogout}
+          icon={({ color, size }) => (
+            <Ionicons name="log-out-outline" size={size} color={color} />
+          )}
+          style={styles.logoutButton}
+        />
       </View>
     </DrawerContentScrollView>
   );
@@ -120,10 +125,8 @@ const DrawerNav = () => {
       })}
     >
       <Drawer.Screen name="Dashboard" component={Dashboard} />
-      {/* <Drawer.Screen name="AddCrop" component={AddCrop} /> */}
       <Drawer.Screen name="SearchCrop" component={SearchCrop} />
       <Drawer.Screen name="MonitorCrop" component={MonitorCrop} />
-      {/* <Drawer.Screen name="SetSched" component={SetSched} /> */}
       <Drawer.Screen name="ViewProfile" component={ViewProfile} />
       <Drawer.Screen name="Logs" component={Logs} />
       <Drawer.Screen name="Notification" component={Notification} />
@@ -153,6 +156,9 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: 'gray',
     marginVertical: 10,
+  },
+  logoutButton: {
+    marginTop: 'auto', // Push to the bottom
   },
 });
 

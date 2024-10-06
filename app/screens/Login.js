@@ -16,13 +16,18 @@ export default function Login({ navigation }) {
       Alert.alert('Error', 'Username and password cannot be empty.');
       return;
     }
-
+  
     try {
       // Call the login function from context
       const result = await context.login(username, password);
       
       // If login is successful, navigate to the main screen
       if (result && result.access) {
+        // Clear input fields before navigating
+        setUsername('');
+        setPassword('');
+        
+        // Navigate to DrawerNav
         navigation.navigate('DrawerNav'); 
       } else {
         // If login is unsuccessful, show an error alert
