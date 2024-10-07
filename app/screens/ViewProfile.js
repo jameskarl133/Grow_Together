@@ -13,12 +13,16 @@ const ViewProfile = () => {
     address: '',
     email: '',
     phno: '',
-    username: '',
-    password: ''
+    username: ''
   });
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [showPassword, setShowPassword] = useState(false); 
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -44,50 +48,45 @@ const ViewProfile = () => {
       const farmerId = await AsyncStorage.getItem('farmerId');
       if (farmerId) {
         const currentProfileData = await viewFarmerProfile(farmerId);
-        const isPasswordChanged = currentProfileData.password !== profile.password;
-  
-        // If the password is being changed, show a confirmation alert
-        if (isPasswordChanged) {
-          Alert.alert(
-            'Confirm Password Change',
-            'Are you sure you want to change your password?',
-            [
-              {
-                text: 'Cancel',
-                onPress: () => console.log('Password change cancelled'),
-                style: 'cancel'
-              },
-              {
-                text: 'Yes',
-                onPress: async () => {
-                  await updateFarmerProfile(farmerId, profile);
-                  Alert.alert('Success', 'Profile updated successfully!');
-                  setModalVisible(false);
-                }
-              }
-            ]
-          );
-          return;
-        }
-  
-        // Check if any other fields were changed
+
         if (
           currentProfileData.fname === profile.fname &&
           currentProfileData.dob === profile.dob &&
           currentProfileData.address === profile.address &&
           currentProfileData.email === profile.email &&
           currentProfileData.phno === profile.phno &&
-          currentProfileData.username === profile.username
+          currentProfileData.username === profile.username &&
+          !newPassword // Ensure the new password is not provided
         ) {
           Alert.alert('No changes', 'You didn’t change your profile.');
           setModalVisible(false);
           return;
         }
 
-        // If no password change, update the profile as usual
-        await updateFarmerProfile(farmerId, profile);
+        // Password validation and update
+        if (newPassword || confirmNewPassword) {
+          if (oldPassword !== currentProfileData.password) {
+            Alert.alert('Error', 'Old password does not match.');
+            return;
+          }
+
+          if (newPassword !== confirmNewPassword) {
+            Alert.alert('Error', 'New passwords do not match.');
+            return;
+          }
+
+          // Update the profile with the new password
+          await updateFarmerProfile(farmerId, { ...profile, password: newPassword });
+        } else {
+          // Update profile without changing password if not provided
+          await updateFarmerProfile(farmerId, profile);
+        }
+
         Alert.alert('Success', 'Profile updated successfully!');
         setModalVisible(false);
+        setOldPassword('');
+        setNewPassword('');
+        setConfirmNewPassword('');
       } else {
         Alert.alert('Error', 'Failed to find farmer ID.');
       }
@@ -185,18 +184,60 @@ const ViewProfile = () => {
                   />
                 </View>
 
-                {/* Password Input with Eye Icon */}
+                {/* Password Inputs */}
                 <View style={styles.inputContainer}>
-                  <Text style={styles.label}>Password:</Text>
+                  <Text style={styles.label}>Old Password (Optional):</Text>
                   <View style={styles.passwordContainer}>
                     <TextInput
                       style={styles.input}
-                      value={profile.password}
-                      onChangeText={(text) => setProfile({ ...profile, password: text })}
-                      secureTextEntry={!showPassword} // Hide or show based on state
+                      value={oldPassword}
+                      onChangeText={setOldPassword}
+                      secureTextEntry={!showOldPassword}
                     />
-                    <TouchableOpacity onPress={toggleShowPassword} style={styles.eyeIcon}>
-                      <Ionicons name={showPassword ? "eye-off-outline" : "eye-outline"} size={24} color="gray" />
+                    <TouchableOpacity onPress={() => setShowOldPassword(!showOldPassword)} style={styles.eyeIcon}>
+                      <Ionicons
+                        name={showOldPassword ? 'eye-off-outline' : 'eye-outline'}
+                        size={24}
+                        color="gray"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>New Password (Optional):</Text>
+                  <View style={styles.passwordContainer}>
+                    <TextInput
+                      style={styles.input}
+                      value={newPassword}
+                      onChangeText={setNewPassword}
+                      secureTextEntry={!showNewPassword}
+                    />
+                    <TouchableOpacity onPress={() => setShowNewPassword(!showNewPassword)} style={styles.eyeIcon}>
+                      <Ionicons
+                        name={showNewPassword ? 'eye-off-outline' : 'eye-outline'}
+                        size={24}
+                        color="gray"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Confirm New Password (Optional):</Text>
+                  <View style={styles.passwordContainer}>
+                    <TextInput
+                      style={styles.input}
+                      value={confirmNewPassword}
+                      onChangeText={setConfirmNewPassword}
+                      secureTextEntry={!!showConfirmNewPassword}
+                    />
+                    <TouchableOpacity onPress={() => setShowConfirmNewPassword(!showConfirmNewPassword)} style={styles.eyeIcon}>
+                      <Ionicons
+                        name={showConfirmNewPassword  ? 'eye-off-outline' : 'eye-outline'}
+                        size={24}
+                        color="gray"
+                      />
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -217,6 +258,7 @@ const ViewProfile = () => {
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -234,6 +276,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: 50,
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  eyeIcon: {
+    marginLeft: -30,
+    marginRight: 10,
   },
   infoContainer: {
     flex: 1,
