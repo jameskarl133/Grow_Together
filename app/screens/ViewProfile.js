@@ -100,9 +100,6 @@ const ViewProfile = () => {
     setModalVisible(true);
   };
 
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
 
   return (
     <LinearGradient colors={['#a8e6cf', '#f5f5f5']} style={styles.container}>
