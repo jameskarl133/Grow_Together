@@ -56,14 +56,14 @@ const ViewProfile = () => {
           currentProfileData.email === profile.email &&
           currentProfileData.phno === profile.phno &&
           currentProfileData.username === profile.username &&
-          !newPassword // Ensure the new password is not provided
+          !newPassword 
         ) {
           Alert.alert('No changes', 'You didn’t change your profile.');
           setModalVisible(false);
           return;
         }
 
-        // Password validation and update
+       
         if (newPassword || confirmNewPassword) {
           if (oldPassword !== currentProfileData.password) {
             Alert.alert('Error', 'Old password does not match.');
@@ -75,10 +75,10 @@ const ViewProfile = () => {
             return;
           }
 
-          // Update the profile with the new password
+          
           await updateFarmerProfile(farmerId, { ...profile, password: newPassword });
         } else {
-          // Update profile without changing password if not provided
+          
           await updateFarmerProfile(farmerId, profile);
         }
 
@@ -184,7 +184,6 @@ const ViewProfile = () => {
                   />
                 </View>
 
-                {/* Password Inputs */}
                 <View style={styles.inputContainer}>
                   <Text style={styles.label}>Old Password (Optional):</Text>
                   <View style={styles.passwordContainer}>
