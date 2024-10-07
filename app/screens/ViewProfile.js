@@ -78,7 +78,7 @@ const ViewProfile = () => {
           
           await updateFarmerProfile(farmerId, { ...profile, password: newPassword });
         } else {
-          
+          // Update profile without changing password if not provided
           await updateFarmerProfile(farmerId, profile);
         }
 
@@ -100,6 +100,9 @@ const ViewProfile = () => {
     setModalVisible(true);
   };
 
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <LinearGradient colors={['#a8e6cf', '#f5f5f5']} style={styles.container}>
@@ -181,6 +184,7 @@ const ViewProfile = () => {
                   />
                 </View>
 
+                {/* Password Inputs */}
                 <View style={styles.inputContainer}>
                   <Text style={styles.label}>Old Password (Optional):</Text>
                   <View style={styles.passwordContainer}>
@@ -226,7 +230,7 @@ const ViewProfile = () => {
                       style={styles.input}
                       value={confirmNewPassword}
                       onChangeText={setConfirmNewPassword}
-                      secureTextEntry={!!showConfirmNewPassword}
+                      secureTextEntry={!showConfirmNewPassword}
                     />
                     <TouchableOpacity onPress={() => setShowConfirmNewPassword(!showConfirmNewPassword)} style={styles.eyeIcon}>
                       <Ionicons
