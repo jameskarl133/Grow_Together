@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react';
-import { View, StyleSheet, Text, Button, Alert } from 'react-native';
+import { View, StyleSheet, Text, Button, Alert, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ApiContext } from '../../Provider';
 import { useFocusEffect } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';  // Importing the icon library
 
 const PlantedCrops = () => {
   const [crops, setCrops] = useState([]);
@@ -57,6 +57,10 @@ const PlantedCrops = () => {
     }
   };
 
+  const handleWatering = () => {
+    Alert.alert("Watering", "You watered the crops!");
+  };
+
   return (
     <LinearGradient colors={['#a8e6cf', '#f5f5f5']} style={styles.container}>
       <Text style={styles.header}>Monitor Crop</Text>
@@ -81,6 +85,11 @@ const PlantedCrops = () => {
           />
         </>
       )}
+
+      {/* Floating Watering Can Button */}
+      <Pressable style={styles.floatingButton} onPress={handleWatering}>
+        <Icon name="watering-can" size={24} color="#fff" />
+      </Pressable>
     </LinearGradient>
   );
 };
@@ -112,7 +121,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   icon: {
-    marginRight: 16,
+    marginRight: 16,  // Space between the icon and the crop name
   },
   crops: {
     fontSize: 20,
@@ -124,6 +133,22 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 20,
     color: '#666',
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 20,
+    backgroundColor: '#4CAF50',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });
 
