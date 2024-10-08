@@ -9,6 +9,7 @@ const PlantedCrops = () => {
   const [crops, setCrops] = useState([]);
   const { fetchCropsPlanted, updateCropToHarvest, updateCropLog } = useContext(ApiContext);
   const [selectedCrop, setSelectedCrop] = useState(null);
+  const [buttonPressed, setButtonPressed] = useState(false); // To track button press state
 
   useFocusEffect(
     React.useCallback(() => {
@@ -33,27 +34,27 @@ const PlantedCrops = () => {
 
   const handleUpdateStatus = async () => {
     if (selectedCrop) {
-        try {
-            await updateCropToHarvest(selectedCrop.crop_name);
-            console.log(`Crop ${selectedCrop.crop_name} status updated to harvested`);
+      try {
+        await updateCropToHarvest(selectedCrop.crop_name);
+        console.log(`Crop ${selectedCrop.crop_name} status updated to harvested`);
 
-            await updateCropLog(selectedCrop.crop_name);
-            console.log(`Crop log for ${selectedCrop.crop_name} updated with harvest date`);
+        await updateCropLog(selectedCrop.crop_name);
+        console.log(`Crop log for ${selectedCrop.crop_name} updated with harvest date`);
 
-            Alert.alert(
-                "Success",
-                `Crop ${selectedCrop.crop_name} has been harvested.`
-            );
+        Alert.alert(
+          "Success",
+          `Crop ${selectedCrop.crop_name} has been harvested.`
+        );
 
-            fetchCrops();
+        fetchCrops();
 
-        } catch (error) {
-            console.error('Error updating crop status:', error.message);
-            Alert.alert(
-                "Error",
-                `Failed to update crop status: ${error.message}`
-            );
-        }
+      } catch (error) {
+        console.error('Error updating crop status:', error.message);
+        Alert.alert(
+          "Error",
+          `Failed to update crop status: ${error.message}`
+        );
+      }
     }
   };
 
@@ -71,7 +72,6 @@ const PlantedCrops = () => {
         <>
           {selectedCrop && (
             <View style={styles.cropContainer}>
-              {/* Replace the Image with the Icon */}
               <Icon name="sprout" size={50} color="#4CAF50" style={styles.icon} />
               <Text style={styles.crops}>{selectedCrop.crop_name}</Text>
             </View>
@@ -87,7 +87,15 @@ const PlantedCrops = () => {
       )}
 
       {/* Floating Watering Can Button */}
-      <Pressable style={styles.floatingButton} onPress={handleWatering}>
+      <Pressable
+        style={[
+          styles.floatingButton,
+          buttonPressed && styles.floatingButtonPressed
+        ]}
+        onPressIn={() => setButtonPressed(true)} 
+        onPressOut={() => setButtonPressed(false)}
+        onPress={handleWatering} 
+      >
         <Icon name="watering-can" size={24} color="#fff" />
       </Pressable>
     </LinearGradient>
@@ -149,6 +157,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
+  },
+  floatingButtonPressed: {
+    backgroundColor: '#388E3C',
   },
 });
 
