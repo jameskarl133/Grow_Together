@@ -27,6 +27,7 @@
     "react-native-calendars": "^1.1307.0",
     "react-native-datepicker": "^1.7.2",
     "react-native-gesture-handler": "~2.16.1",
+    "react-native-linear-gradient": "^2.8.3",
     "react-native-modal-datetime-picker": "^18.0.0",
     "react-native-modern-datepicker": "^1.0.0-beta.91",
     "react-native-picker-select": "^9.1.3",

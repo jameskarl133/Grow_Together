@@ -4,6 +4,7 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItem } from '@rea
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Dashboard from '../screens/Dashboard';
 import MonitorCrop from '../screens/MonitorCrop';
+import ConnectDevice from '../screens/ConnectDevice';
 import SearchCrop from '../screens/SearchCrop';
 import ViewProfile from '../screens/ViewProfile';
 import Logs from '../screens/logs';
@@ -79,6 +80,13 @@ function CustomDrawerContent(props) {
           )}
         />
         <DrawerItem
+          label="Connect To Device"
+          onPress={() => props.navigation.navigate('ConnectDevice')}
+          icon={({ color, size }) => (
+            <Ionicons name="wifi" size={size} color={color} />
+          )}
+        />
+        <DrawerItem
           label="Monitor Crop"
           onPress={() => props.navigation.navigate('MonitorCrop')}
           icon={({ color, size }) => (
@@ -126,6 +134,7 @@ const DrawerNav = () => {
     >
       <Drawer.Screen name="Dashboard" component={Dashboard} />
       <Drawer.Screen name="SearchCrop" component={SearchCrop} />
+      <Drawer.Screen name="ConnectDevice" component={ConnectDevice} />
       <Drawer.Screen name="MonitorCrop" component={MonitorCrop} />
       <Drawer.Screen name="ViewProfile" component={ViewProfile} />
       <Drawer.Screen name="Logs" component={Logs} />
