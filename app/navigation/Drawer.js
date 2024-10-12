@@ -6,11 +6,13 @@ import Dashboard from '../screens/Dashboard';
 import MonitorCrop from '../screens/MonitorCrop';
 import ConnectDevice from '../screens/ConnectDevice';
 import SearchCrop from '../screens/SearchCrop';
+import SelectCrop from '../screens/SelectCrop';
 import ViewProfile from '../screens/ViewProfile';
 import Logs from '../screens/logs';
 import Notification from '../screens/Notification';
 import { ApiContext } from '../../Provider'; // Adjust according to your Provider path
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AddCrop from '../screens/AddCrop';
 
 const Drawer = createDrawerNavigator();
 
@@ -72,11 +74,25 @@ function CustomDrawerContent(props) {
             <Ionicons name="home-outline" size={size} color={color} />
           )}
         />
+        {/* <DrawerItem
+          label="Add Crop"
+          onPress={() => props.navigation.navigate('Add Crop')}
+          icon={({ color, size }) => (
+            <Ionicons name="add-outline" size={size} color={color} />
+          )}
+        /> */}
         <DrawerItem
           label="Search Crop"
           onPress={() => props.navigation.navigate('SearchCrop')}
           icon={({ color, size }) => (
             <Ionicons name="search-outline" size={size} color={color} />
+          )}
+        />
+        <DrawerItem
+          label="Select Crop"
+          onPress={() => props.navigation.navigate('SelectCrop')}
+          icon={({ color, size }) => (
+            <Ionicons name="add-outline" size={size} color={color} />
           )}
         />
         <DrawerItem
@@ -133,7 +149,9 @@ const DrawerNav = () => {
       })}
     >
       <Drawer.Screen name="Dashboard" component={Dashboard} />
+      {/* <Drawer.Screen name="Add Crop" component={AddCrop} /> */}
       <Drawer.Screen name="SearchCrop" component={SearchCrop} />
+      <Drawer.Screen name="SelectCrop" component={SelectCrop} />
       <Drawer.Screen name="ConnectDevice" component={ConnectDevice} />
       <Drawer.Screen name="MonitorCrop" component={MonitorCrop} />
       <Drawer.Screen name="ViewProfile" component={ViewProfile} />

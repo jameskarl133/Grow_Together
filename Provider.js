@@ -2,15 +2,15 @@ import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const farmer_url = 'http://192.168.1.4:8000/farmer';
-const crop_url = 'http://192.168.1.4:8000/crop';
-const crop_harvested_url = 'http://192.168.1.4:8000/crop/harvested';
-const crop_planted_url = 'http://192.168.1.4:8000/crop/planted';
-const farmer_login_url = 'http://192.168.1.4:8000/farmer/login';
-const crop_log_url = 'http://192.168.1.4:8000/crop_log';
-const farmer_profile_url = 'http://192.168.1.4:8000/farmer/profile';
-const crop_logs_delete_all_url = 'http://192.168.1.4:8000/crop_logs/delete_all';
-const websocket_url = 'ws://192.168.1.4:8000/ws'; // WebSocket URL
+const farmer_url = 'http://192.168.0.107:8000/farmer';
+const crop_url = 'http://192.168.0.107:8000/crop';
+const crop_harvested_url = 'http://192.168.0.107:8000/crop/harvested';
+const crop_planted_url = 'http://192.168.0.107:8000/crop/planted';
+const farmer_login_url = 'http://192.168.0.107:8000/farmer/login';
+const crop_log_url = 'http://192.168.0.107:8000/crop_log';
+const farmer_profile_url = 'http://192.168.0.107:8000/farmer/profile';
+const crop_logs_delete_all_url = 'http://192.168.0.107:8000/crop_logs/delete_all';
+const websocket_url = 'ws://192.168.0.107:8000/ws'; // WebSocket URL
 
 export const ApiContext = createContext();
 
