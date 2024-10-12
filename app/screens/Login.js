@@ -53,49 +53,51 @@ export default function Login({ navigation }) {
               <Text style={styles.textColor}>Grow Together!</Text>
             </View>
 
-            <View style={styles.inputContainer}>
-              <TextInput 
-                placeholder="Username" 
-                style={styles.input} 
-                value={username}
-                onChangeText={setUsername}
-              />
-              <View style={styles.passwordContainer}>
-                <TextInput
-                  placeholder="Password"
-                  secureTextEntry={!passwordVisible}
-                  style={styles.passwordInput}
-                  value={password} 
-                  onChangeText={setPassword}
+            <View style={styles.formContainer}>
+              <View style={styles.inputContainer}>
+                <TextInput 
+                  placeholder="Username" 
+                  style={styles.input} 
+                  value={username}
+                  onChangeText={setUsername}
                 />
-                <TouchableOpacity
-                  onPress={() => setPasswordVisible(!passwordVisible)}
-                  style={styles.eyeIcon}
-                >
-                  <Ionicons
-                    name={passwordVisible ? 'eye-off' : 'eye'}
-                    size={24}
-                    color="gray"
+                <View style={styles.passwordContainer}>
+                  <TextInput
+                    placeholder="Password"
+                    secureTextEntry={!passwordVisible}
+                    style={styles.passwordInput}
+                    value={password} 
+                    onChangeText={setPassword}
                   />
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setPasswordVisible(!passwordVisible)}
+                    style={styles.eyeIcon}
+                  >
+                    <Ionicons
+                      name={passwordVisible ? 'eye-off' : 'eye'}
+                      size={24}
+                      color="gray"
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
+
+              <View style={styles.buttonContainer}>
+                <Button
+                  title="Login"
+                  onPress={handleLogin}
+                  color="green"
+                />
+              </View>
+
+              <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+                <Text style={styles.linkText}>Forgot password?</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+                <Text style={styles.linkText}>Sign up</Text>
+              </TouchableOpacity>
             </View>
-
-            <View style={styles.buttonContainer}>
-              <Button
-                title="Login"
-                onPress={handleLogin}
-                color="green"
-              />
-            </View>
-
-            <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
-              <Text style={styles.linkText}>Forgot password?</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-              <Text style={styles.linkText}>Sign up</Text>
-            </TouchableOpacity>
           </ScrollView>
         </KeyboardAvoidingView>
       </ImageBackground>
@@ -134,6 +136,18 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+  },
+  formContainer: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+    width: '100%',
+    alignItems: 'center',
   },
   inputContainer: {
     width: '100%',

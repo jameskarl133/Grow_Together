@@ -9,6 +9,7 @@ const ViewProfile = () => {
   const { viewFarmerProfile, updateFarmerProfile } = useContext(ApiContext);
   const [profile, setProfile] = useState({
     fname: '',
+    lname: '',
     dob: '',
     address: '',
     email: '',
@@ -63,7 +64,6 @@ const ViewProfile = () => {
           return;
         }
 
-       
         if (newPassword || confirmNewPassword) {
           if (oldPassword !== currentProfileData.password) {
             Alert.alert('Error', 'Old password does not match.');
@@ -75,7 +75,6 @@ const ViewProfile = () => {
             return;
           }
 
-          
           await updateFarmerProfile(farmerId, { ...profile, password: newPassword });
         } else {
           // Update profile without changing password if not provided
@@ -100,25 +99,22 @@ const ViewProfile = () => {
     setModalVisible(true);
   };
 
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-
   return (
     <LinearGradient colors={['#a8e6cf', '#f5f5f5']} style={styles.container}>
       <View style={styles.whiteContainer}>
         <View style={styles.profileContainer}>
           <Ionicons name="person-circle-outline" size={120} color="green" />
-          <View style={styles.infoContainer}>
-            <Text style={styles.name}>{profile.fname}</Text>
-            <Text style={styles.detail}>Birthdate: {profile.dob}</Text>
-            <Text style={styles.detail}>Address: {profile.address}</Text>
-            <Text style={styles.detail}>Email: {profile.email}</Text>
-            <Text style={styles.detail}>Phone: {profile.phno}</Text>
-          </View>
+          <Text style={styles.name}>{profile.fname} {profile.lname}</Text>
           <TouchableOpacity onPress={handleUpdateProfileIcon} style={styles.editIcon}>
             <Ionicons name="create-outline" size={30} color="green" />
           </TouchableOpacity>
+        </View>
+
+        <View style={styles.infoContainer}>
+          <Text style={styles.detail}>Birthdate: {profile.dob}</Text>
+          <Text style={styles.detail}>Address: {profile.address}</Text>
+          <Text style={styles.detail}>Email: {profile.email}</Text>
+          <Text style={styles.detail}>Phone: {profile.phno}</Text>
         </View>
 
         {/* Update Profile Modal */}
@@ -134,11 +130,19 @@ const ViewProfile = () => {
                 <Text style={styles.modalTitle}>Update Profile</Text>
 
                 <View style={styles.inputContainer}>
-                  <Text style={styles.label}>Name:</Text>
+                  <Text style={styles.label}>First Name:</Text>
                   <TextInput
                     style={styles.input}
                     value={profile.fname}
                     onChangeText={(text) => setProfile({ ...profile, fname: text })}
+                  />
+                </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Last Name:</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={profile.lname}
+                    onChangeText={(text) => setProfile({ ...profile, lname: text })}
                   />
                 </View>
                 <View style={styles.inputContainer}>
@@ -258,7 +262,6 @@ const ViewProfile = () => {
   );
 };
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -272,27 +275,19 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   profileContainer: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     marginTop: 50,
   },
-  passwordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  eyeIcon: {
-    marginLeft: -30,
-    marginRight: 10,
-  },
   infoContainer: {
-    flex: 1,
-    marginLeft: 20,
+    marginTop: 20,
+    alignItems: 'center',
   },
   name: {
     fontSize: 24,
     fontWeight: 'bold',
     color: 'green',
+    marginTop: 10,
   },
   detail: {
     fontSize: 16,
@@ -311,7 +306,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    width: '80%',
+    width: '90%',
+    maxHeight: '90%',
     backgroundColor: '#fff',
     padding: 20,
     borderRadius: 10,
@@ -342,7 +338,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#fff',
     fontSize: 16,
-    width: '100%',
+    width: '99%',
   },
   passwordContainer: {
     flexDirection: 'row',
