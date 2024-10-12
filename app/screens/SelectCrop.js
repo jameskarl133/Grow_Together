@@ -1,72 +1,68 @@
-import React, { useContext, useState } from 'react';
-import { View, TextInput, StyleSheet, Text, FlatList, TouchableOpacity, Modal, Button } from 'react-native';
+import React, { useContext, useState, useEffect } from 'react';
+import { View, StyleSheet, Text, FlatList, TouchableOpacity, Modal, Button, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ApiContext } from '../../Provider';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Picker } from '@react-native-picker/picker';
 
-const SearchCrop = () => {
-  const [cropName, setCropName] = useState('');
+const SearchCropBySoil = () => {
+  const [selectedSoil, setSelectedSoil] = useState('');
   const [crops, setCrops] = useState([]);
   const [selectedCrop, setSelectedCrop] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const { fetchCropsHarvested /*, handleSelectCrop*/ } = useContext(ApiContext);
+  const { fetchCropsHarvested, handleSelectCrop } = useContext(ApiContext);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      fetchCrops();
-    }, [])
-  );
+  // Use effect to fetch crops when the selected soil type changes
+  useEffect(() => {
+    if (selectedSoil) {
+      fetchCropsBySoil(selectedSoil);
+    } else {
+      setCrops([]); // Clear crops if no soil type is selected
+    }
+  }, [selectedSoil]);
 
-  const fetchCrops = async () => {
+  const fetchCropsBySoil = async (soilType) => {
     try {
       const fetchedCrops = await fetchCropsHarvested();
       if (fetchedCrops) {
-        // Sort crops alphabetically by crop name
-        const sortedCrops = fetchedCrops.sort((a, b) => 
-          (a.crop_name || '').localeCompare(b.crop_name || '')
+        // Filter crops by checking if selected soil type is included in crop_soil
+        const filteredCrops = fetchedCrops.filter(crop =>
+          crop.crop_soil?.toLowerCase().split(',').map(type => type.trim()).includes(soilType.toLowerCase())
         );
-        setCrops(sortedCrops);
+        setCrops(filteredCrops);
       }
     } catch (error) {
       console.error('Error fetching crops:', error.message);
     }
   };
 
-  const filteredCrops = crops.filter(crop =>
-    crop.crop_name?.toLowerCase().includes(cropName.toLowerCase())
-  );
+  const handleView = (crop) => {
+    setSelectedCrop(crop);
+    setModalVisible(true);
+  };
 
-  /*
   const handleSelect = async (cropName) => {
     try {
-      await handleSelectCrop(cropName);
-      await fetchCrops();
+      await handleSelectCrop(cropName); // Assuming this function handles the selection of the crop
+      Alert.alert('Success', `${cropName} has been selected.`);
+      await fetchCropsBySoil(selectedSoil); // Re-fetch crops to reflect any changes
     } catch (error) {
       Alert.alert('Error', error.message);
     }
   };
-  */
-
-  const handleView = (crop) => {
-    setSelectedCrop(crop); // Set the selected crop
-    setModalVisible(true); // Show the modal
-  };
 
   const renderCrop = ({ item }) => (
     <View style={styles.row}>
-      {/* Add the sprout icon on the left */}
       <Icon name="sprout" size={30} color="#4CAF50" style={styles.icon} />
       <View style={styles.cell}>
         <Text style={styles.cropName}>{item.crop_name || 'Unnamed Crop'}</Text>
       </View>
-      {/*
       <View style={styles.cell}>
-        <TouchableOpacity style={styles.button} onPress={() => handleSelect(item.crop_name)}>
+        <TouchableOpacity style={styles.selectButton} onPress={() => handleSelect(item.crop_name)}>
           <Text style={styles.buttonText}>Select</Text>
         </TouchableOpacity>
       </View>
-      */}
       <View style={styles.cell}>
         <TouchableOpacity style={styles.viewButton} onPress={() => handleView(item)}>
           <Text style={styles.buttonText}>View</Text>
@@ -78,28 +74,32 @@ const SearchCrop = () => {
   return (
     <LinearGradient colors={['#a8e6cf', '#f5f5f5']} style={styles.container}>
       <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.textInput}
-          placeholder="Type crop name"
-          value={cropName}
-          onChangeText={setCropName}
-        />
+        <Picker
+          selectedValue={selectedSoil}
+          style={styles.picker}
+          onValueChange={(itemValue) => setSelectedSoil(itemValue)}
+        >
+          <Picker.Item label="Select soil type" value="" />
+          <Picker.Item label="Sandy soil" value="Sandy soil" />
+          <Picker.Item label="Silt soil" value="Silt soil" />
+          <Picker.Item label="Loamy soil" value="Loamy soil" />
+          <Picker.Item label="Clay soil" value="Clay soil" />
+        </Picker>
       </View>
 
       <FlatList
-        data={filteredCrops}
-        keyExtractor={(item) => item._id?.toString() || Math.random().toString()}  // Unique key with fallback
+        data={crops}
+        keyExtractor={(item) => item._id?.toString() || Math.random().toString()}
         renderItem={renderCrop}
         ListEmptyComponent={<Text>No crops found</Text>}
       />
 
-      {/* Modal for viewing crop details */}
       {selectedCrop && (
         <Modal
           visible={modalVisible}
           transparent={true}
           animationType="fade"
-          onRequestClose={() => setModalVisible(false)} // Close the modal when back button is pressed
+          onRequestClose={() => setModalVisible(false)}
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
@@ -107,7 +107,6 @@ const SearchCrop = () => {
               <Text style={styles.modalText}>Soil Type: {selectedCrop.crop_soil}</Text>
               <Text style={styles.modalText}>Moisture: {selectedCrop.crop_moisture}</Text>
               <Text style={styles.modalText}>Temperature: {selectedCrop.crop_temp + '°C'}</Text>
-
               <Button title="Close" onPress={() => setModalVisible(false)} />
             </View>
           </View>
@@ -124,13 +123,10 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginBottom: 20,
   },
-  textInput: {
-    flex: 1,
-    height: 40,
+  picker: {
+    height: 50,
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 5,
@@ -138,7 +134,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    alignItems: 'center', 
+    alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 16,
     paddingVertical: 12,
@@ -156,20 +152,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  button: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 5,
-    flexShrink: 1, // Allows the button to shrink if needed
-  },
-  viewButton: { // Specific style for the View button
+  selectButton: {
     backgroundColor: '#4CAF50',
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 5,
     flexShrink: 1,
-    marginLeft: 10,  // Moves the View button to the right
+    marginRight: 10, // Space between Select and View buttons
+  },
+  viewButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 5,
+    flexShrink: 1,
   },
   buttonText: {
     color: 'white',
@@ -198,8 +194,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   icon: {
-    marginRight: 10,  // Space between the icon and the crop name
+    marginRight: 10,
   },
 });
 
-export default SearchCrop;
+export default SearchCropBySoil;

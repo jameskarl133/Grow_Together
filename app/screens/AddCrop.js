@@ -1,39 +1,32 @@
 import React, { useContext, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Image } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+import { StyleSheet, Text, View, TextInput, Button, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ApiContext } from '../../Provider';
+import { CheckBox } from 'react-native-elements'; // Make sure to install this package
 
-export default function AddCrop() {
+export default function AddCrop({ initialPlantName = '', initialSoilTypes = [], initialMoistureLevel = '', initialTemperature = '' }) {
   // const [image, setImage] = useState(null);
-  const [plantName, setPlantName] = useState('');
-  const [soilType, setSoilType] = useState('');
-  // const [soilDescription, setSoilDescription] = useState('');
-  const [moistureLevel, setMoistureLevel] = useState('');
-  const [temperature, setTemperature] = useState('');
+  const [plantName, setPlantName] = useState(initialPlantName);
+  const [selectedSoilTypes, setSelectedSoilTypes] = useState(initialSoilTypes); // Array for selected soil types
+  const [moistureLevel, setMoistureLevel] = useState(initialMoistureLevel);
+  const [temperature, setTemperature] = useState(initialTemperature);
   const { postCropData } = useContext(ApiContext);
 
-  // const chooseImage = async () => {
-  //   let result = await ImagePicker.launchImageLibraryAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  //     allowsEditing: true,
-  //     aspect: [2, 2],
-  //     quality: 1,
-  //   });
-
-  //   if (!result.canceled) {
-  //     setImage(result.assets[0].uri);
-  //   }
-  // };
-
-
+  const handleSoilTypeToggle = (soilType) => {
+    setSelectedSoilTypes((prevSelected) =>
+      prevSelected.includes(soilType)
+        ? prevSelected.filter((item) => item !== soilType) // Remove from selection
+        : [...prevSelected, soilType] // Add to selection
+    );
+  };
 
   const handleAddCrop = async () => {
-    const cropData ={
+    const cropData = {
       crop_name: plantName,
       // crop_image: crimg,
-      crop_soil: soilType,
+      crop_soil: selectedSoilTypes.join(', '), // Join array into a string
       // crop_soil_desc: soilDescription,
       crop_moisture: moistureLevel,
       crop_temp: temperature.toString(),
@@ -42,19 +35,16 @@ export default function AddCrop() {
       // crop_created_at: 
       // crop_updated_at:
     };
-    try{
+    try {
       const response = await postCropData(cropData);
       alert('Crop added successfully!');
-    }catch (error) {
+    } catch (error) {
       alert('Crop not added');
     }
   };
 
   return (
-    <LinearGradient
-      colors={['#a8e6cf', '#f5f5f5']}
-      style={styles.container}
-    >
+    <LinearGradient colors={['#a8e6cf', '#f5f5f5']} style={styles.container}>
       <Text style={styles.textColor}>Add Crop</Text>
       {/* <TouchableOpacity onPress={chooseImage} style={styles.imagePicker}>
         {image ? (
@@ -63,7 +53,7 @@ export default function AddCrop() {
           <Text style={styles.imagePlaceholder}>Add Crop Photo</Text>
         )}
       </TouchableOpacity> */}
-      
+
       <TextInput
         placeholder="Plant Name"
         style={styles.input}
@@ -71,28 +61,17 @@ export default function AddCrop() {
         onChangeText={setPlantName}
       />
 
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={soilType}
-          style={styles.picker}
-          onValueChange={(itemValue) => setSoilType(itemValue)}
-        >
-          <Picker.Item label="Select Soil Type:" value="" enabled={false}/>
-          <Picker.Item label="Silt Soil" value="Silt Soil" />
-          <Picker.Item label="Loamy Soil" value="Loamy Soil" />
-          <Picker.Item label="Clay Soil" value="Clay Soil" />
-          <Picker.Item label="Sandy Soil" value="Sandy Soil" />
-        </Picker>
-      </View>
-
-      {/* <TextInput
-        placeholder="Soil Description"
-        style={[styles.input, styles.textArea]}
-        value={soilDescription}
-        onChangeText={setSoilDescription}
-        multiline={true}
-        numberOfLines={4}
-      /> */}
+      <Text style={styles.label}>Select Soil Type:</Text>
+      <ScrollView style={styles.checkboxContainer}>
+        {['Silt Soil', 'Loamy Soil', 'Clay Soil', 'Sandy Soil'].map((soilType) => (
+          <CheckBox
+            key={soilType}
+            title={soilType}
+            checked={selectedSoilTypes.includes(soilType)}
+            onPress={() => handleSoilTypeToggle(soilType)}
+          />
+        ))}
+      </ScrollView>
 
       {/* Moisture Level Picker */}
       <View style={styles.pickerContainer}>
@@ -101,7 +80,7 @@ export default function AddCrop() {
           style={styles.picker}
           onValueChange={(itemValue) => setMoistureLevel(itemValue)}
         >
-          <Picker.Item label="Select Moisture Level:" value="" enabled={false}/>
+          <Picker.Item label="Select Moisture Level:" value="" enabled={false} />
           <Picker.Item label="Low" value="Low" />
           <Picker.Item label="Mid" value="Mid" />
           <Picker.Item label="High" value="High" />
@@ -143,29 +122,16 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 5,
   },
-  textArea: {
-    height: 100,
-    textAlignVertical: 'top',
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    alignSelf: 'flex-start',
   },
-  imagePicker: {
-    borderColor: 'gray',
-    borderWidth: 1,
+  checkboxContainer: {
+    maxHeight: 120,
     marginBottom: 20,
-    width: 150,
-    height: 150,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-    borderRadius: 5,
-  },
-  image: {
     width: '100%',
-    height: '100%',
-    borderRadius: 5,
-  },
-  imagePlaceholder: {
-    color: 'gray',
-    textAlign: 'center',
   },
   pickerContainer: {
     height: 40,
