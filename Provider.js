@@ -1,6 +1,11 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from "expo-notifications";
+import { initializeNotifications } from './app/screens/initialize';
+
+// Initialize notifications
+initializeNotifications();
 
 const farmer_url = 'http://192.168.1.7:8000/farmer';
 const crop_url = 'http://192.168.1.7:8000/crop';
@@ -11,6 +16,7 @@ const crop_log_url = 'http://192.168.1.7:8000/crop_log';
 const farmer_profile_url = 'http://192.168.1.7:8000/farmer/profile';
 const crop_logs_delete_all_url = 'http://192.168.1.7:8000/crop_logs/delete_all';
 const websocket_url = 'ws://192.168.1.7:8000/ws'; // WebSocket URL
+const notifdelete_url = 'http://192.168.1.7:8000/notifications/delete_all'
 
 export const ApiContext = createContext();
 
@@ -24,26 +30,53 @@ const MyComponent = ({ children }) => {
   useEffect(() => {
     const ws = new WebSocket(websocket_url);
 
+    // Define WebSocket event handlers
     ws.onopen = () => {
       console.log('Connected to WebSocket');
       setWebSocket(ws);  // Store WebSocket connection
     };
-
+  
     ws.onmessage = (event) => {
-      const message = event.data;
-      console.log('Received:', message);
-      setMessages((prevMessages) => [...prevMessages, message]);  // Store messages
-      setNotificationMessage(message);  // Set the notification message when received
+      // handleMessage(event);
+      scheduleNotification(JSON.parse(event.data))
     };
-
+  
     ws.onclose = (event) => {
       console.log('WebSocket disconnected', event.reason);
     };
-
+  
     ws.onerror = (error) => {
       console.error('WebSocket Error:', error.message);
     };
-
+  
+    // Function to handle incoming messages
+    const handleMessage = (event) => {
+      try {
+        const message = JSON.parse(event.data); // Parse the JSON message
+        console.log('Received:', message.message, "at", message.timestamp);
+        
+        // Update state with the new message
+        setMessages((prevMessages) => [...prevMessages, message]);  // Store messages
+        setNotificationMessage(message);  // Set the notification message when received
+      } catch (error) {
+        console.error('Error parsing message:', error.message);
+      }
+    };
+    const scheduleNotification = async (message) => {
+      try {
+        console.log('notifying:', message.message);
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: 'New Message',
+            body: message.message, // Display the fetched message from the database
+          },
+          trigger: null, // Display immediately
+        });
+      } catch (error) {
+        console.error('Error scheduling notification:', error);
+      }
+    };
+  
     // Clean up WebSocket connection on unmount
     return () => {
       if (ws.readyState === WebSocket.OPEN) {
@@ -217,9 +250,21 @@ const MyComponent = ({ children }) => {
     }
   };
 
+  const deletenotifs = async () => {
+    try {
+      const response = await axios.delete(notifdelete_url);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting logs:', error.message);
+      throw error;
+    }
+  };
+  
+
   return (
     <ApiContext.Provider value={{
       postFarmerData,
+      deletenotifs,
       postCropData,
       login,
       viewFarmerProfile,
