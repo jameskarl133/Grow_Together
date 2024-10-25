@@ -27,18 +27,16 @@ const MyComponent = ({ children }) => {
   const [farmer, setFarmer] = useState(null); // State for farmer data
 
   // WebSocket connection setup
-  useEffect(() => {
+  const setupWebSocket = () => {
     const ws = new WebSocket(websocket_url);
 
-    // Define WebSocket event handlers
     ws.onopen = () => {
       console.log('Connected to WebSocket');
       setWebSocket(ws);  // Store WebSocket connection
     };
   
     ws.onmessage = (event) => {
-      // handleMessage(event);
-      scheduleNotification(JSON.parse(event.data))
+      scheduleNotification(JSON.parse(event.data));
     };
   
     ws.onclose = (event) => {
@@ -48,42 +46,22 @@ const MyComponent = ({ children }) => {
     ws.onerror = (error) => {
       console.error('WebSocket Error:', error.message);
     };
-  
-    // Function to handle incoming messages
-    const handleMessage = (event) => {
-      try {
-        const message = JSON.parse(event.data); // Parse the JSON message
-        console.log('Received:', message.message, "at", message.timestamp);
-        
-        // Update state with the new message
-        setMessages((prevMessages) => [...prevMessages, message]);  // Store messages
-        setNotificationMessage(message);  // Set the notification message when received
-      } catch (error) {
-        console.error('Error parsing message:', error.message);
-      }
-    };
-    const scheduleNotification = async (message) => {
-      try {
-        console.log('notifying:', message.message);
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: 'New Message',
-            body: message.message, // Display the fetched message from the database
-          },
-          trigger: null, // Display immediately
-        });
-      } catch (error) {
-        console.error('Error scheduling notification:', error);
-      }
-    };
-  
-    // Clean up WebSocket connection on unmount
-    return () => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.close();  // Close WebSocket when the component unmounts
-      }
-    };
-  }, []);
+  };
+
+  const scheduleNotification = async (message) => {
+    try {
+      console.log('notifying:', message.message);
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'New Message',
+          body: message.message, // Display the fetched message from the database
+        },
+        trigger: null, // Display immediately
+      });
+    } catch (error) {
+      console.error('Error scheduling notification:', error);
+    }
+  };
 
   // WebSocket message sending function
   const sendMessage = (message) => {
@@ -102,6 +80,7 @@ const MyComponent = ({ children }) => {
       const farmerData = response.data.farmer;
       setFarmer(farmerData); // Set farmer state
       await AsyncStorage.setItem('farmerId', farmerData.id);  // Store farmer ID in AsyncStorage
+      setupWebSocket();  // Open WebSocket connection on successful login
       return response.data;
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -259,7 +238,6 @@ const MyComponent = ({ children }) => {
       throw error;
     }
   };
-  
 
   return (
     <ApiContext.Provider value={{
