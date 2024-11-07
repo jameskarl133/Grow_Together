@@ -82,13 +82,6 @@ function CustomDrawerContent(props) {
           )}
         /> */}
         <DrawerItem
-          label="Search Crop"
-          onPress={() => props.navigation.navigate('SearchCrop')}
-          icon={({ color, size }) => (
-            <Ionicons name="search-outline" size={size} color={color} />
-          )}
-        />
-        <DrawerItem
           label="Select Crop"
           onPress={() => props.navigation.navigate('SelectCrop')}
           icon={({ color, size }) => (
@@ -150,7 +143,7 @@ const DrawerNav = () => {
     >
       <Drawer.Screen name="Dashboard" component={Dashboard} />
       {/* <Drawer.Screen name="Add Crop" component={AddCrop} /> */}
-      <Drawer.Screen name="SearchCrop" component={SearchCrop} />
+      {/* <Drawer.Screen name="SearchCrop" component={SearchCrop} /> */}
       <Drawer.Screen name="SelectCrop" component={SelectCrop} />
       <Drawer.Screen name="ConnectDevice" component={ConnectDevice} />
       <Drawer.Screen name="MonitorCrop" component={MonitorCrop} />
