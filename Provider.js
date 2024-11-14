@@ -16,13 +16,16 @@ const crop_log_url = 'http://192.168.1.2:8000/crop_log';
 const farmer_profile_url = 'http://192.168.1.2:8000/farmer/profile';
 const crop_logs_delete_all_url = 'http://192.168.1.2:8000/crop_logs/delete_all';
 const websocket_url = 'ws://192.168.1.2:8000/ws'; // WebSocket URL
+const websocket_control ='ws://192.168.1.2:8000/control';
 const notifdelete_url = 'http://192.168.1.2:8000/notifications/delete_all'
+const listofdev_url = 'http://192.168.1.2:8000/device';
 
 export const ApiContext = createContext();
 
 const MyComponent = ({ children }) => {
   const [websocket, setWebSocket] = useState(null);
   const [messages, setMessages] = useState([]);  // Store WebSocket messages
+  const [wsmessage, setwsMessages] = useState({})
   const [notificationMessage, setNotificationMessage] = useState("");  // State for notification message
   const [farmer, setFarmer] = useState(null); // State for farmer data
 
@@ -49,8 +52,10 @@ const MyComponent = ({ children }) => {
   };
 
   const scheduleNotification = async (message) => {
+    // console.log(wsmessage)
     try {
       console.log('notifying:', message.message);
+      setwsMessages(JSON.parse(message.message));
       await Notifications.scheduleNotificationAsync({
         content: {
           title: 'New Message',
@@ -207,6 +212,16 @@ const MyComponent = ({ children }) => {
     }
   };
 
+  const fetchlistofdev = async () => {
+    try {
+      const response = await axios.get(listofdev_url);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching crop logs:', error.message);
+      throw error;
+    }
+  };
+
   // Update crop log to harvested
   const updateCropLog = async (cropName) => {
     try {
@@ -268,9 +283,13 @@ const MyComponent = ({ children }) => {
       fetchCropLogs,
       deleteLogsExceptUnharvested,
       updateCropLog,
-      messages,
+      fetchlistofdev,
+      websocket_control,
+      wsmessage,
       notificationMessage,  // Pass the notificationMessage state to children components
-      sendMessage  // WebSocket message sender
+      sendMessage,
+      websocket
+       // WebSocket message sender
     }}>
       {children}
     </ApiContext.Provider>

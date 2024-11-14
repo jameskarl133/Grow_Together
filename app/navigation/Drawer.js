@@ -92,6 +92,13 @@ function CustomDrawerContent(props) {
           label="Connect To Device"
           onPress={() => props.navigation.navigate('ConnectDevice')}
           icon={({ color, size }) => (
+            <Ionicons name="bluetooth-outline" size={size} color={color} />
+          )}
+        />    
+        <DrawerItem
+          label="List of Devices"
+          onPress={() => props.navigation.navigate('Listofdev')}
+          icon={({ color, size }) => (
             <Ionicons name="wifi" size={size} color={color} />
           )}
         />

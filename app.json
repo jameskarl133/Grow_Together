@@ -25,7 +25,14 @@
       "permissions": [
         "NOTIFICATIONS",
         "WAKE_LOCK",
-        "VIBRATE"
+        "VIBRATE",
+        "BLUETOOTH",
+        "BLUETOOTH_ADMIN",
+        "BLUETOOTH_SCAN",
+        "BLUETOOTH_CONNECT",
+        "BLUETOOTH_ADVERTISE",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
       ],
       "package": "com.GrowTogether"
     },

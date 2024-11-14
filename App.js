@@ -10,6 +10,8 @@ import Dashboard from './app/screens/Dashboard';
 import DrawerNav from './app/navigation/Drawer';
 import NavBar from './app/navigation/NavBar';
 import MyComponent from './Provider';
+import AddDevice from './app/screens/AddDevice';
+import ConnectDevice from './app/screens/ConnectDevice';
 
 const Stack = createStackNavigator();
 
@@ -51,6 +53,8 @@ export default function App() {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="SignUp" component={SignUp} />
         <Stack.Screen name="DrawerNav" component={DrawerNav} />
+        <Stack.Screen name="ConnectDevice" component={ConnectDevice}/>
+        <Stack.Screen name="AddDevice" component={AddDevice}/>
         {/* <Stack.Screen name="Dashboard" component={Dashboard} /> */}
       </Stack.Navigator>
 

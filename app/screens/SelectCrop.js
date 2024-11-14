@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, Text, FlatList, TouchableOpacity, Modal, Button, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ApiContext } from '../../Provider';
@@ -13,35 +13,29 @@ const SearchCropBySoil = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const { fetchCropsHarvested, handleSelectCrop } = useContext(ApiContext);
 
-  // Function to fetch all crops
-  const fetchAllCrops = async () => {
+  // Use effect to fetch crops when the selected soil type changes
+  useEffect(() => {
+    if (selectedSoil) {
+      fetchCropsBySoil(selectedSoil);
+    } else {
+      setCrops([]); // Clear crops if no soil type is selected
+    }
+  }, [selectedSoil]);
+
+  const fetchCropsBySoil = async (soilType) => {
     try {
       const fetchedCrops = await fetchCropsHarvested();
-      setCrops(fetchedCrops || []);
+      if (fetchedCrops) {
+        // Filter crops by checking if selected soil type is included in crop_soil
+        const filteredCrops = fetchedCrops.filter(crop =>
+          crop.crop_soil?.toLowerCase().split(',').map(type => type.trim()).includes(soilType.toLowerCase())
+        );
+        setCrops(filteredCrops);
+      }
     } catch (error) {
       console.error('Error fetching crops:', error.message);
     }
   };
-
-  // Fetch all crops every time the component is focused
-  useFocusEffect(
-    useCallback(() => {
-      fetchAllCrops();
-      setSelectedSoil(''); // Reset soil filter to "Select soil type"
-    }, [])
-  );
-
-  // Filter crops by selected soil type when it changes
-  useEffect(() => {
-    if (selectedSoil) {
-      const filteredCrops = crops.filter(crop =>
-        crop.crop_soil?.toLowerCase().split(',').map(type => type.trim()).includes(selectedSoil.toLowerCase())
-      );
-      setCrops(filteredCrops);
-    } else {
-      fetchAllCrops(); // Re-fetch all crops if no soil type is selected
-    }
-  }, [selectedSoil]);
 
   const handleView = (crop) => {
     setSelectedCrop(crop);
@@ -50,9 +44,9 @@ const SearchCropBySoil = () => {
 
   const handleSelect = async (cropName) => {
     try {
-      await handleSelectCrop(cropName);
+      await handleSelectCrop(cropName); // Assuming this function handles the selection of the crop
       Alert.alert('Success', `${cropName} has been selected.`);
-      await fetchAllCrops();
+      await fetchCropsBySoil(selectedSoil); // Re-fetch crops to reflect any changes
     } catch (error) {
       Alert.alert('Error', error.message);
     }
@@ -164,7 +158,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 5,
     flexShrink: 1,
-    marginRight: 10,
+    marginRight: 10, // Space between Select and View buttons
   },
   viewButton: {
     backgroundColor: '#4CAF50',

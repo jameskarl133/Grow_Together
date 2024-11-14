@@ -8,9 +8,57 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const PlantedCrops = () => {
   const [crops, setCrops] = useState([]);
-  const { fetchCropsPlanted, updateCropToHarvest, updateCropLog } = useContext(ApiContext);
+  const [soilMoisture, setSoilMoisture] = useState(null);
+  const [waterLevel, setWaterLevel] = useState(null);
+  const [temperature, setTemperature] = useState(null);
+  const { fetchCropsPlanted, updateCropToHarvest, updateCropLog, websocket, wsmessage, websocket_control } = useContext(ApiContext);
   const [selectedCrop, setSelectedCrop] = useState(null);
   const [isWatering, setIsWatering] = useState(false);
+
+  // Listen for WebSocket messages and update the state
+  useEffect(() => {
+    setupWebSocket();
+
+
+    return () => {
+      // if (websocket) {
+      //   websocket.onmessage = null; // Clean up the WebSocket listener
+      // }
+    };
+  }, [websocket]);
+
+  const setupWebSocket = () => {
+    const ws = new WebSocket(websocket_control);
+
+    ws.onopen = () => {
+      console.log('Connected to WebSocket');
+      setWebSocket(ws);  // Store WebSocket connection
+    };
+  
+    ws.onmessage = (event) => {
+      console.log(JSON.parse(event.data));
+    };
+  
+    ws.onclose = (event) => {
+      console.log('WebSocket disconnected', event.reason);
+    };
+  
+    ws.onerror = (error) => {
+      console.error('WebSocket Error:', error.message);
+    };
+  };
+
+  const handleFetchData = () => {
+    if (websocket && websocket.readyState === WebSocket.OPEN) {
+      const message = JSON.stringify({
+        command: 'FETCH_DATA',
+      });
+
+      websocket.send(message); // Request the data from ESP32
+    } else {
+      Alert.alert('Connection Error', 'WebSocket is not connected.');
+    }
+  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -48,10 +96,25 @@ const PlantedCrops = () => {
     }
   };
 
-  const handleWateringToggle = () => {
-    setIsWatering((prev) => !prev);
-    Alert.alert(isWatering ? "You have stopped watering" : "You are watering the crops!");
-  };
+const handleWateringToggle = (mesage) => {
+  if (websocket && websocket.readyState === WebSocket.OPEN) {
+    // Determine the message to send
+    const command = isWatering ? 'WATER_OFF' : 'WATER_ON';
+    
+    const message = {
+      message: command // This will be either 'WATER_ON' or 'WATER_OFF'
+    };
+    websocket.send(isWatering ? 'WATER_OFF' : 'WATER_ON');
+
+    
+    // Toggle the watering state
+    setIsWatering(!isWatering);
+    Alert.alert('Water Pump', `Water pump turned ${isWatering ? 'off' : 'on'}`);
+  } else {
+    Alert.alert('Connection Error', 'WebSocket is not connected.');
+  }
+};
+
 
   const categorizeLevel = (value) => {
     if (value <= 30) return 'Low';
@@ -80,7 +143,7 @@ const PlantedCrops = () => {
             <Ionicons name="speedometer-outline" size={40} color="#3498db" />
             <View style={styles.statTextContainer}>
               <Text style={styles.statLabel}>Moisture Level</Text>
-              <Text style={styles.statValue}>{categorizeLevel(30)}</Text>
+              <Text style={styles.statValue}>{wsmessage.soil_moisture !== null ? wsmessage.soil_moisture : 'Loading...'}</Text>
             </View>
           </View>
 
@@ -88,7 +151,7 @@ const PlantedCrops = () => {
             <Ionicons name="water-outline" size={40} color="#1abc9c" />
             <View style={styles.statTextContainer}>
               <Text style={styles.statLabel}>Water Level</Text>
-              <Text style={styles.statValue}>{categorizeLevel(70)}</Text>
+              <Text style={styles.statValue}>{wsmessage.water_level !== null ? wsmessage.water_level : 'Loading...'}</Text>
             </View>
           </View>
 
@@ -96,7 +159,7 @@ const PlantedCrops = () => {
             <Ionicons name="thermometer-outline" size={40} color="#e74c3c" />
             <View style={styles.statTextContainer}>
               <Text style={styles.statLabel}>Temperature</Text>
-              <Text style={styles.statValue}>25°C</Text>
+               <Text style={styles.statValue}>{wsmessage.temperature !== null ? wsmessage.temperature + '°C' : 'Loading...'}</Text>
             </View>
           </View>
 
