@@ -3,9 +3,10 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, 
 import { ApiContext } from '../../Provider'; // Import ApiContext
 
 const DeviceList = ({ navigation }) => {
-    const { fetchlistofdev } = useContext(ApiContext); // Access fetchlistofdev from context
+    const { fetchlistofdev , setDevice } = useContext(ApiContext); // Access fetchlistofdev from context
     const [devices, setDevices] = useState([]);
     const [loading, setLoading] = useState(true);
+    
 
     const loadDevices = async () => {
         try {
@@ -27,6 +28,8 @@ const DeviceList = ({ navigation }) => {
 
     const handleDevicePress = (device) => {
         navigation.navigate('AddDevice', { device });
+        setDevice(device)
+        ;
     };
 
     if (loading) {

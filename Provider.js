@@ -16,7 +16,7 @@ const crop_log_url = 'http://192.168.1.2:8000/crop_log';
 const farmer_profile_url = 'http://192.168.1.2:8000/farmer/profile';
 const crop_logs_delete_all_url = 'http://192.168.1.2:8000/crop_logs/delete_all';
 const websocket_url = 'ws://192.168.1.2:8000/ws'; // WebSocket URL
-const websocket_control ='ws://192.168.1.2:8000/control';
+const websocket_link ='ws://192.168.1.2:8000/link';
 const notifdelete_url = 'http://192.168.1.2:8000/notifications/delete_all'
 const listofdev_url = 'http://192.168.1.2:8000/device';
 
@@ -28,7 +28,14 @@ const MyComponent = ({ children }) => {
   const [wsmessage, setwsMessages] = useState({})
   const [notificationMessage, setNotificationMessage] = useState("");  // State for notification message
   const [farmer, setFarmer] = useState(null); // State for farmer data
+  const [device, setDevice] = useState();
+  let is_water_low = false;
+  let is_soil_low = false;
 
+
+  const setdev = (device) =>{
+    setDevice(device)
+  }
   // WebSocket connection setup
   const setupWebSocket = () => {
     const ws = new WebSocket(websocket_url);
@@ -39,11 +46,16 @@ const MyComponent = ({ children }) => {
     };
   
     ws.onmessage = (event) => {
+      if (event.data.includes("WATER")) {
+        return
+      }
       scheduleNotification(JSON.parse(event.data));
     };
   
     ws.onclose = (event) => {
       console.log('WebSocket disconnected', event.reason);
+      setWebSocket(ws);
+      console.log('reconnected')
     };
   
     ws.onerror = (error) => {
@@ -52,17 +64,48 @@ const MyComponent = ({ children }) => {
   };
 
   const scheduleNotification = async (message) => {
+    
     // console.log(wsmessage)
     try {
-      console.log('notifying:', message.message);
-      setwsMessages(JSON.parse(message.message));
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'New Message',
-          body: message.message, // Display the fetched message from the database
-        },
-        trigger: null, // Display immediately
-      });
+      // console.log('notifying:', message.message);
+      let data = JSON.parse(message.message)
+      
+      console.log(message.message)
+      console.log(data.id)
+      // console.log(device.id)
+      if(data.id) {
+        setwsMessages(data);
+      }
+        
+      
+      if (data.water_level == "Low" && !is_water_low){
+        is_water_low = true
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: 'New Message',
+            body: "Low water Level",
+          },
+          trigger: null,
+        });
+      }
+      else if (data.water_level != "Low" && is_water_low){
+        is_water_low = false
+      }
+      if (data.soil_moisture >= 3000 && !is_soil_low){
+        is_soil_low = true;
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: 'New Message',
+            body: "Low soil moisture", // Display the fetched message from the database
+          },
+          
+          trigger: null, // Display immediately
+        });
+      }
+      else if (data.soil_moisture < 3000 && is_soil_low){
+        is_soil_low = false;
+      }
+      
     } catch (error) {
       console.error('Error scheduling notification:', error);
     }
@@ -284,11 +327,11 @@ const MyComponent = ({ children }) => {
       deleteLogsExceptUnharvested,
       updateCropLog,
       fetchlistofdev,
-      websocket_control,
       wsmessage,
       notificationMessage,  // Pass the notificationMessage state to children components
       sendMessage,
-      websocket
+      websocket,
+      setdev
        // WebSocket message sender
     }}>
       {children}

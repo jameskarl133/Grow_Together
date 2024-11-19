@@ -11,54 +11,63 @@ const PlantedCrops = () => {
   const [soilMoisture, setSoilMoisture] = useState(null);
   const [waterLevel, setWaterLevel] = useState(null);
   const [temperature, setTemperature] = useState(null);
-  const { fetchCropsPlanted, updateCropToHarvest, updateCropLog, websocket, wsmessage, websocket_control } = useContext(ApiContext);
+  const { fetchCropsPlanted, updateCropToHarvest, updateCropLog, websocket, wsmessage } = useContext(ApiContext);
   const [selectedCrop, setSelectedCrop] = useState(null);
+    const [moistureLevel, setMoistureLevel] = useState('Loading...');
   const [isWatering, setIsWatering] = useState(false);
 
   // Listen for WebSocket messages and update the state
+  const categorizeLevel = (value) => {
+    if (value >= 3000) return 'Low';
+    if (value >= 2000) return 'Mid';
+    return 'High';
+  };
   useEffect(() => {
-    setupWebSocket();
-
-
-    return () => {
-      // if (websocket) {
-      //   websocket.onmessage = null; // Clean up the WebSocket listener
-      // }
-    };
-  }, [websocket]);
-
-  const setupWebSocket = () => {
-    const ws = new WebSocket(websocket_control);
-
-    ws.onopen = () => {
-      console.log('Connected to WebSocket');
-      setWebSocket(ws);  // Store WebSocket connection
-    };
-  
-    ws.onmessage = (event) => {
-      console.log(JSON.parse(event.data));
-    };
-  
-    ws.onclose = (event) => {
-      console.log('WebSocket disconnected', event.reason);
-    };
-  
-    ws.onerror = (error) => {
-      console.error('WebSocket Error:', error.message);
-    };
-  };
-
-  const handleFetchData = () => {
-    if (websocket && websocket.readyState === WebSocket.OPEN) {
-      const message = JSON.stringify({
-        command: 'FETCH_DATA',
-      });
-
-      websocket.send(message); // Request the data from ESP32
-    } else {
-      Alert.alert('Connection Error', 'WebSocket is not connected.');
+    if (wsmessage && wsmessage.soil_moisture !== null) {
+      const level = categorizeLevel(wsmessage.soil_moisture);
+      setMoistureLevel(level);
     }
-  };
+
+
+  //   return () => {
+  //     // if (websocket) {
+  //     //   websocket.onmessage = null; // Clean up the WebSocket listener
+  //     // }
+  //   };
+  }, [wsmessage]);
+
+  // const setupWebSocket = () => {
+  //   const ws = new WebSocket(websocket_control);
+
+  //   ws.onopen = () => {
+  //     console.log('Connected to WebSocket');
+  //     // setWebSocket(ws);  // Store WebSocket connection
+  //   };
+  
+  //   ws.onmessage = (event) => {
+  //     console.log(JSON.parse(event.data));
+  //   };
+  
+  //   ws.onclose = (event) => {
+  //     console.log('WebSocket disconnected', event.reason);
+  //   };
+  
+  //   ws.onerror = (error) => {
+  //     console.error('WebSocket Error:', error.message);
+  //   };
+  // };
+
+  // const handleFetchData = () => {
+  //   if (websocket && websocket.readyState === WebSocket.OPEN) {
+  //     const message = JSON.stringify({
+  //       command: 'FETCH_DATA',
+  //     });
+
+  //     websocket.send(message); // Request the data from ESP32
+  //   } else {
+  //     Alert.alert('Connection Error', 'WebSocket is not connected.');
+  //   }
+  // };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -96,7 +105,7 @@ const PlantedCrops = () => {
     }
   };
 
-const handleWateringToggle = (mesage) => {
+const handleWateringToggle = () => {
   if (websocket && websocket.readyState === WebSocket.OPEN) {
     // Determine the message to send
     const command = isWatering ? 'WATER_OFF' : 'WATER_ON';
@@ -115,12 +124,16 @@ const handleWateringToggle = (mesage) => {
   }
 };
 
-
-  const categorizeLevel = (value) => {
-    if (value <= 30) return 'Low';
-    if (value <= 70) return 'Mid';
-    return 'High';
-  };
+  // value = wsmessage.soil_moisture
+  // const categorizeLevel = (value) => {
+  //   moisture_level = ''
+  //   if (value <= 4095 || value >= 3000) 
+  //     moisture_level ='Low';
+  //   if (value <= 2999 || value >= 2000)
+  //     moisture_level = 'Mid';
+  //   else
+  //     moisture_level = 'High'
+  // };
 
   return (
     <LinearGradient colors={['#a8e6cf', '#f5f5f5']} style={styles.container}>
@@ -143,7 +156,7 @@ const handleWateringToggle = (mesage) => {
             <Ionicons name="speedometer-outline" size={40} color="#3498db" />
             <View style={styles.statTextContainer}>
               <Text style={styles.statLabel}>Moisture Level</Text>
-              <Text style={styles.statValue}>{wsmessage.soil_moisture !== null ? wsmessage.soil_moisture : 'Loading...'}</Text>
+              <Text style={styles.statValue}>{moistureLevel}</Text>
             </View>
           </View>
 
@@ -174,7 +187,18 @@ const handleWateringToggle = (mesage) => {
             styles.wateringIconContainer,
             isWatering && styles.wateringIconActive
           ]}
-          onPress={handleWateringToggle}
+          onLongPress={
+            ()=>{
+            websocket.send("WATER_ON")
+            console.log('pressed')
+            }
+            }
+          onPressOut={
+            ()=>{
+            websocket.send("WATER_OFF")
+            console.log('unpressed')
+            }
+            }
         >
           <Ionicons name="water" size={24} color="#fff" />
         </Pressable>

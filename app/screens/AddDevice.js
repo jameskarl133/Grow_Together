@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, FlatList, NativeModules, NativeEventEmitter } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, FlatList, NativeModules, NativeEventEmitter} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ApiContext } from '../../Provider';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -14,7 +14,7 @@ const BleManagerModule = NativeModules.BleManager;
 const BleManagerEmitter = new NativeEventEmitter(BleManagerModule);
 
 const AddDevice = ({ navigation, route }) => {
-  const { fetchCropsHarvested, handleSelectCrop } = useContext(ApiContext);
+  const { fetchCropsHarvested, handleSelectCrop} = useContext(ApiContext);
   const [deviceName, setDeviceName] = useState('');
   const [selectedSoil, setSelectedSoil] = useState('');
   const [allCrops, setAllCrops] = useState([]);
@@ -49,42 +49,56 @@ const AddDevice = ({ navigation, route }) => {
     BleManagerEmitter.addListener('BleManagerDidUpdateValueForCharacteristic', ({value, peripheral, characteristic, service}) => {
         // Display notification message
 
-        console.log(value);
         value = Buffer.from(value).toString('utf-8')
-        console.log(value);
 
-        var data = JSON.parse(value)
-
-        // if (value == 'true') {
-        //     disconnect();
-        //     Alert.alert('Success!');
-        // } else if (value == 'existed') {
-        //     Alert.alert('Device name already existed.')
-        // } else if (value == 'failed_request') {
-        //     Alert.alert('Linking device into the server failed. Please try again.')
-        // } else {
-        //     Alert.alert('Please try again.')
-        // }
+        if (value == 'Linked') {
+            disconnect();
+            Alert.alert('Success!');
+        } else if (value == 'Connection Lost') {
+            Alert.alert('Connection lost')
+        } else if (value == 'API_Error') {
+            Alert.alert('Linking device into the server failed. Please try again.')
+        } else {
+            Alert.alert('Please try again.')
+        }
 
         // setIsLinkingDone(true);
       });
   }, [selectedSoil, allCrops]);
 
-  // Set selected crop without updating the status
+  // const setupWebSocket = () => {
+  //   const ws = new WebSocket(websocket_link);
+
+  //   ws.onopen = () => {
+  //     console.log('Connected to WebSocket');  // Store WebSocket connection
+  //   };
+  
+  //   ws.onmessage = (event) => {
+  //     console.log(event.data);
+  //   };
+  
+  //   ws.onclose = (event) => {
+  //     console.log('WebSocket disconnected', event.reason);
+  //   };
+  
+  //   ws.onerror = (error) => {
+  //     console.error('WebSocket Error:', error.message);
+  //   };
+  // };
+
   const handleSelect = (id, cropName) => {
     setSelectedCrop(cropName);setSelectedCropid(id);
   };
 
-  // Confirm device and update selected crop to "planted"
   const handleConfirmDevice = async () => {
     if (!selectedCrop) {
       Alert.alert('Error', 'Please select a crop for the device.');
       return;
     }
     try {
-      await handleSelectCrop(selectedCrop); // Update to "planted"
+      await handleSelectCrop(selectedCrop);
       Alert.alert('Success', `${selectedCrop} has been set to planted.`);
-      navigation.navigate('AddDevice'); // Navigate back or to another screen as needed
+      navigation.navigate('AddDevice');
     } catch (error) {
       Alert.alert('Error', error.message);
     }
@@ -110,10 +124,11 @@ const AddDevice = ({ navigation, route }) => {
 
     BleManager.retrieveServices(route.params.device.id).then(
         (info) => {
-            BleManager.startNotification(info.id, info.services[2].uuid, info.characteristics[3].characteristic)
+          console.log(info);
+            BleManager.startNotification(info.id, info.services[2].uuid, info.characteristics[5].characteristic)
                 .then(() => {
                 // Display confirmation message
-                console.log(`Subscribed to ${info.id} - ${info.services[2].uuid} - ${info.characteristics[3].characteristic}`);
+                console.log(`Subscribed to ${info.id} - ${info.services[2].uuid} - ${info.characteristics[5].characteristic}`);
                 })
                 .catch((err) => {
                 // Update error message
@@ -123,14 +138,15 @@ const AddDevice = ({ navigation, route }) => {
                     deviceName: deviceName,
                     crop_id:selectedCropid
                 }
-                writeData(info, JSON.stringify(data));
+                writeData(info, 'n|'+ deviceName);
+                writeData(info, 'cn|' + selectedCropid);
         }
         
     )
     
 
     const writeData = async (info, data) => {
-        BleManager.write(info.id, info.services[2].uuid, info.characteristics[3].characteristic, Buffer.from(data).toJSON().data, 512)
+        BleManager.write(info.id, info.services[2].uuid, info.characteristics[5].characteristic, Buffer.from(data).toJSON().data, 512)
             .then(() => {
                 console.log("Write success");
             })
@@ -140,7 +156,7 @@ const AddDevice = ({ navigation, route }) => {
     }
     const readData = async (info) => {
         let res = null;
-        BleManager.read(info.id, info.services[2].uuid, info.characteristics[3].characteristic)
+        BleManager.read(info.id, info.services[2].uuid, info.characteristics[5].characteristic)
             .then((data) => {
             console.log("message", data)
             })
@@ -149,25 +165,7 @@ const AddDevice = ({ navigation, route }) => {
             });
 
     }
-    const disconnect = async () => {
-        BleManagerEmitter.removeAllListeners('BleManagerDiscoverPeripheral');
-        BleManagerEmitter.removeAllListeners('BleManagerStopScan');
-        // BleManagerEmitter.removeAllListeners('BleManagerConnectPeripheral');
-        // BleManagerEmitter.removeAllListeners('BleManagerDisconnectPeripheral');
-        BleManagerEmitter.removeAllListeners('BleManagerDidUpdateValueForCharacteristic')
-        BleManager.disconnect(props.route.params.item.id).then(
-            () => {
-                console.log('Disconnected.');
-                props.navigation.reset({
-                    index: 0,
-                    routes: [{ name: 'BottomTabMain' }]
-                });
-            },
-            (e) => {
-                console.log(e);
-            }
-        )
-    }
+
     const wsSend = (message) => { 
         var data = JSON.stringify(message)
         if (websocket && websocket.readyState === WebSocket.OPEN) {
@@ -179,6 +177,25 @@ const AddDevice = ({ navigation, route }) => {
       };
     
   }
+  const disconnect = async () => {
+    BleManagerEmitter.removeAllListeners('BleManagerDiscoverPeripheral');
+    BleManagerEmitter.removeAllListeners('BleManagerStopScan');
+    // BleManagerEmitter.removeAllListeners('BleManagerConnectPeripheral');
+    // BleManagerEmitter.removeAllListeners('BleManagerDisconnectPeripheral');
+    BleManagerEmitter.removeAllListeners('BleManagerDidUpdateValueForCharacteristic')
+    BleManager.disconnect().then(
+        () => {
+            console.log('Disconnected.');
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'MonitorCrop' }]
+            });
+        },
+        (e) => {
+            console.log(e);
+        }
+    )
+}
 
 
   return (
@@ -215,7 +232,9 @@ const AddDevice = ({ navigation, route }) => {
       />
 
       <TouchableOpacity onPress={()=>{
+        handleConfirmDevice();
         connectDevice();
+        // handleSelect();
 
       }} style={styles.confirmButton}>
         <Text style={styles.buttonText}>Confirm Device</Text>

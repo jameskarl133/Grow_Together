@@ -52,7 +52,7 @@ export default function App() {
         {/* <Stack.Screen name="Home" component={HomeScreen} /> */}
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="SignUp" component={SignUp} />
-        <Stack.Screen name="DrawerNav" component={DrawerNav} />
+        <Stack.Screen name="DrawerNav" component={NavBar} />
         <Stack.Screen name="ConnectDevice" component={ConnectDevice}/>
         <Stack.Screen name="AddDevice" component={AddDevice}/>
         {/* <Stack.Screen name="Dashboard" component={Dashboard} /> */}
