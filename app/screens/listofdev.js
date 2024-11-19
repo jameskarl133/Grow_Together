@@ -27,7 +27,7 @@ const DeviceList = ({ navigation }) => {
     }, []);
 
     const handleDevicePress = (device) => {
-        navigation.navigate('AddDevice', { device });
+        navigation.navigate('MonitorCrop', { device });
         setDevice(device)
         ;
     };
