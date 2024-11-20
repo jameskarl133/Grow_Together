@@ -13,7 +13,7 @@ const PlantedCrops = () => {
   const [temperature, setTemperature] = useState(null);
   const { fetchCropsPlanted, updateCropToHarvest, updateCropLog, websocket, wsmessage } = useContext(ApiContext);
   const [selectedCrop, setSelectedCrop] = useState(null);
-    const [moistureLevel, setMoistureLevel] = useState('Loading...');
+  const [moistureLevel, setMoistureLevel] = useState('Loading...');
   const [isWatering, setIsWatering] = useState(false);
 
   // Listen for WebSocket messages and update the state
@@ -189,6 +189,7 @@ const handleWateringToggle = () => {
           ]}
           onLongPress={
             ()=>{
+            console.log('Websocket state:', websocket?.readyState)
             websocket.send("WATER_ON")
             console.log('pressed')
             }

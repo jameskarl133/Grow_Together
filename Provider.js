@@ -72,9 +72,9 @@ const MyComponent = ({ children }) => {
       // console.log('notifying:', message.message);
       let data = JSON.parse(message.message)
       
-      console.log(message.message)
-      console.log(data.id)
-      console.log(device)
+      // console.log(message.message)
+      // console.log(data.id)
+      // console.log(device)
       // if(data.id == device.id) {
         setwsMessages(data);
       // }
