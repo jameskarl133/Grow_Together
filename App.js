@@ -12,6 +12,7 @@ import NavBar from './app/navigation/NavBar';
 import MyComponent from './Provider';
 import AddDevice from './app/screens/AddDevice';
 import ConnectDevice from './app/screens/ConnectDevice';
+import ForgotPass from './app/screens/forgotpass';
 
 const Stack = createStackNavigator();
 
@@ -51,6 +52,7 @@ export default function App() {
       
         {/* <Stack.Screen name="Home" component={HomeScreen} /> */}
         <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="ForgotPass" component={ForgotPass} />
         <Stack.Screen name="SignUp" component={SignUp} />
         <Stack.Screen name="DrawerNav" component={NavBar} />
         <Stack.Screen name="ConnectDevice" component={ConnectDevice}/>

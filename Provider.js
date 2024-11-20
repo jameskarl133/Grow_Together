@@ -7,19 +7,19 @@ import { initializeNotifications } from './app/screens/initialize';
 
 initializeNotifications();
 
-const farmer_url = 'http://192.168.1.2:8000/farmer';
-const crop_url = 'http://192.168.1.2:8000/crop';
-const crop_harvested_url = 'http://192.168.1.2:8000/crop/harvested';
-const crop_planted_url = 'http://192.168.1.2:8000/crop/planted';
-const farmer_login_url = 'http://192.168.1.2:8000/farmer/login';
-const crop_log_url = 'http://192.168.1.2:8000/crop_log';
-const farmer_profile_url = 'http://192.168.1.2:8000/farmer/profile';
-const crop_logs_delete_all_url = 'http://192.168.1.2:8000/crop_logs/delete_all';
-const device_delete_url='http://192.168.1.2:8000/device/delete_all';
-const websocket_url = 'ws://192.168.1.2:8000/ws'; // WebSocket URL
-const websocket_link ='ws://192.168.1.2:8000/link';
-const notifdelete_url = 'http://192.168.1.2:8000/notifications/delete_all'
-const listofdev_url = 'http://192.168.1.2:8000/device';
+const farmer_url = 'http://192.168.1.3:8000/farmer';
+const crop_url = 'http://192.168.1.3:8000/crop';
+const crop_harvested_url = 'http://192.168.1.3:8000/crop/harvested';
+const crop_planted_url = 'http://192.168.1.3:8000/crop/planted';
+const farmer_login_url = 'http://192.168.1.3:8000/farmer/login';
+const crop_log_url = 'http://192.168.1.3:8000/crop_log';
+const farmer_profile_url = 'http://192.168.1.3:8000/farmer/profile';
+const crop_logs_delete_all_url = 'http://192.168.1.3:8000/crop_logs/delete_all';
+const websocket_url = 'ws://192.168.1.3:8000/ws'; // WebSocket URL
+const websocket_control ='ws://192.168.1.3:8000/control';
+const notifdelete_url = 'http://192.168.1.3:8000/notifications/delete_all'
+const listofdev_url = 'http://192.168.1.3:8000/device';
+const farmer_forgot_password_url = 'http://192.168.1.3:8000';
 
 export const ApiContext = createContext();
 
@@ -328,6 +328,51 @@ const MyComponent = ({ children }) => {
       throw error;
     }
   };
+  // Verify username function
+  const verifyUsername = async (username) => {
+    try {
+      const response = await axios.get(`${farmer_forgot_password_url}/farmer/forgot-password/verify`, {
+        params: { username }
+      });
+      return response.data;  // { question: "Security Question" }
+    } catch (error) {
+      console.error('Error verifying username:', error.message);
+      throw error;
+    }
+  };
+
+// Verify security answer
+const verifySecurityAnswer = async (username, answer) => {
+  try {
+    const response = await axios.post(
+      `${farmer_forgot_password_url}/farmer/forgot-password/verify_answer`, 
+      {
+        username: username,  // Make sure username is being passed
+        answer: answer       // Make sure answer is being passed
+      },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error verifying answer:', error.message);
+    throw error;
+  }
+};
+
+const updatePassword = async (username, newPassword) => {
+  try {
+    const response = await axios.put(
+      `${farmer_forgot_password_url}/update_password`, 
+      { username, new_password: newPassword },  // Use `new_password` to match backend
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+    return response.data;  // Return response from the backend
+  } catch (error) {
+    console.error('Error updating password:', error.message);
+    throw error;
+  }
+};
+
 
   return (
     <ApiContext.Provider value={{
@@ -346,6 +391,7 @@ const MyComponent = ({ children }) => {
       deleteLogsExceptUnharvested,
       updateCropLog,
       fetchlistofdev,
+      websocket_control,
       wsmessage,
       notificationMessage,  // Pass the notificationMessage state to children components
       sendMessage,
