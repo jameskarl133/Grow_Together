@@ -17,6 +17,7 @@ const AddDevice = ({ navigation, route }) => {
   const { fetchCropsHarvested, handleSelectCrop} = useContext(ApiContext);
   const [deviceName, setDeviceName] = useState('');
   const [selectedSoil, setSelectedSoil] = useState('');
+  const [selectedSoils, setSelectedSoils] = useState([]);
   const [allCrops, setAllCrops] = useState([]);
   const [filteredCrops, setFilteredCrops] = useState([]);
   const [selectedCropid, setSelectedCropid] = useState(null);
@@ -38,10 +39,13 @@ const AddDevice = ({ navigation, route }) => {
   );
 
   useEffect(() => {
-    if (selectedSoil) {
-      const cropsBySoil = allCrops.filter(crop =>
-        crop.crop_soil?.toLowerCase().split(',').map(type => type.trim()).includes(selectedSoil.toLowerCase())
-      );
+    if (selectedSoils.length > 0) {
+      const cropsBySoil = allCrops.filter(crop => {
+        const cropSoilTypes = crop.crop_soil?.toLowerCase().split(',').map(type => type.trim());
+        return selectedSoils.every(soil => 
+          cropSoilTypes.includes(soil.toLowerCase())
+        );
+      });
       setFilteredCrops(cropsBySoil);
     } else {
       setFilteredCrops(allCrops);
@@ -64,7 +68,7 @@ const AddDevice = ({ navigation, route }) => {
 
         // setIsLinkingDone(true);
       });
-  }, [selectedSoil, allCrops]);
+  }, [selectedSoils, allCrops]);
 
   // const setupWebSocket = () => {
   //   const ws = new WebSocket(websocket_link);
@@ -210,20 +214,35 @@ const AddDevice = ({ navigation, route }) => {
 
       <Text style={styles.header}>Select Crop for Device</Text>
 
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={selectedSoil}
-          style={styles.picker}
-          onValueChange={setSelectedSoil}
-        >
-          <Picker.Item label="Select soil type" value="" />
-          <Picker.Item label="Sandy soil" value="Sandy soil" />
-          <Picker.Item label="Silt soil" value="Silt soil" />
-          <Picker.Item label="Loamy soil" value="Loamy soil" />
-          <Picker.Item label="Clay soil" value="Clay soil" />
-        </Picker>
-      </View>
-
+      <View style={styles.filterContainer}>
+  {['All', 'Sandy soil', 'Silt soil', 'Loamy soil', 'Clay soil'].map((soil) => (
+    <TouchableOpacity
+      key={soil}
+      style={[
+        styles.filterButton,
+        selectedSoils.includes(soil) && styles.filterButtonActive
+      ]}
+      onPress={() => {
+        if (soil === 'All') {
+          setSelectedSoils([]);
+        } else {
+          setSelectedSoils(prev => 
+            prev.includes(soil) 
+              ? prev.filter(s => s !== soil)
+              : [...prev, soil]
+          );
+        }
+      }}
+    >
+      <Text style={[
+        styles.filterText,
+        selectedSoils.includes(soil) && styles.filterTextActive
+      ]}>
+        {soil}
+      </Text>
+    </TouchableOpacity>
+  ))}
+</View>
       <FlatList
         data={filteredCrops}
         keyExtractor={(item) => item._id?.toString() || Math.random().toString()}
@@ -260,6 +279,33 @@ const styles = StyleSheet.create({
     color: 'white',
     backgroundColor: '#2c3e50',
   },
+  filterContainer: {
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  gap: 8,
+  padding: 10,
+  marginBottom: 20,
+},
+filterButton: {
+  paddingHorizontal: 16,
+  paddingVertical: 8,
+  borderRadius: 20,
+  borderWidth: 1,
+  borderColor: '#bdc3c7',
+  backgroundColor: 'white',
+  marginRight: 8,
+  marginBottom: 8,
+},
+filterButtonActive: {
+  backgroundColor: '#3498db',
+  borderColor: '#3498db',
+},
+filterText: {
+  color: '#2c3e50',
+},
+filterTextActive: {
+  color: 'white',
+},
   header: {
     fontSize: 24,
     color: 'white',

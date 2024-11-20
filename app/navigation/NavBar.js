@@ -162,7 +162,7 @@ const NavBar = () => {
       <Drawer.Screen name ="Listofdev" component={Listofdev}/>
       {/* <Drawer.Screen name="SelectCrop" component={SelectCrop} /> */}
       <Drawer.Screen name="ConnectDevice" component={ConnectDevice} />
-      {/* <Drawer.Screen name="MonitorCrop" component={MonitorCrop} /> */}
+      <Drawer.Screen name="Monitor Crop" component={MonitorCrop} />
       <Drawer.Screen name="ViewProfile" component={ViewProfile} />
       {/* <Drawer.Screen name="Logs" component={Logs} /> */}
       <Drawer.Screen name="Notification" component={Notification} />

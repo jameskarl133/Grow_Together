@@ -3,7 +3,7 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, 
 import { ApiContext } from '../../Provider'; // Import ApiContext
 
 const DeviceList = ({ navigation }) => {
-    const { fetchlistofdev , setDevice } = useContext(ApiContext); // Access fetchlistofdev from context
+    const { fetchlistofdev , setdev, devicedelete } = useContext(ApiContext); // Access fetchlistofdev from context
     const [devices, setDevices] = useState([]);
     const [loading, setLoading] = useState(true);
     
@@ -13,6 +13,7 @@ const DeviceList = ({ navigation }) => {
             const data = await fetchlistofdev(); 
             console.log("Devices fetched:", data);
             setDevices(data);
+            
         } catch (error) {
             console.error("Error details:", error); // Log full error details
             alert(`Network Error: ${error.message}`);
@@ -21,15 +22,24 @@ const DeviceList = ({ navigation }) => {
         }
     };
     
+    const handleDeleteDevice = async () => {
+        try {
+            await devicedelete();
+            loadDevices(); // Refresh the list after deletion
+        } catch (error) {
+            Alert.alert('Error', 'Failed to delete device');
+        }
+    };
 
     useEffect(() => {
         loadDevices();
     }, []);
 
     const handleDevicePress = (device) => {
-        navigation.navigate('MonitorCrop', { device });
-        setDevice(device)
-        ;
+        // console.log('ajsdfk')
+        setdev(device);
+        navigation.navigate('Monitor Crop', { device });
+        
     };
 
     if (loading) {
@@ -38,19 +48,44 @@ const DeviceList = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Device List</Text>
-            <FlatList
-                data={devices}
-                key={(item) => item.id}
-                renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => handleDevicePress(item)} style={styles.deviceItem}>
-                        <Text style={styles.deviceName}>{item.device_name}</Text>
-                        <Text style={styles.deviceMac}>{item.mac_ad}</Text>
-                    </TouchableOpacity>
-                )}
-            />
-        </View>
-    );
+        <Text style={styles.title}>Device List</Text>
+        <FlatList
+            data={devices}
+            key={(item) => item.id}
+            renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => handleDevicePress(item)} style={styles.deviceItem}>
+                    <Text style={styles.deviceName}>{item.device_name}</Text>
+                    <Text style={styles.deviceMac}>{item.mac_ad}</Text>
+                </TouchableOpacity>
+            )}
+        />
+        <TouchableOpacity 
+            style={styles.deleteAllButton}
+            onPress={() => {
+                Alert.alert(
+                    'Confirm Deletion',
+                    'Are you sure you want to delete all devices?',
+                    [
+                        {
+                            text: 'Cancel',
+                            style: 'cancel'
+                        },
+                        {
+                            text: 'Delete',
+                            onPress: async () => {
+                                console.log('Deleting all devices...');
+                                await handleDeleteDevice();
+                                loadDevices();
+                            }
+                        }
+                    ]
+                );
+            }}
+        >
+            <Text style={styles.deleteAllButtonText}>Delete All Devices</Text>
+        </TouchableOpacity>
+    </View>
+);
 };
 
 const styles = StyleSheet.create({
@@ -64,6 +99,23 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 20,
     },
+    deviceContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+},
+deleteAllButton: {
+    backgroundColor: '#ff4444',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+},
+deleteAllButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
+},
     deviceItem: {
         padding: 15,
         borderRadius: 8,

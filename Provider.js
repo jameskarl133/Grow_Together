@@ -15,6 +15,7 @@ const farmer_login_url = 'http://192.168.1.2:8000/farmer/login';
 const crop_log_url = 'http://192.168.1.2:8000/crop_log';
 const farmer_profile_url = 'http://192.168.1.2:8000/farmer/profile';
 const crop_logs_delete_all_url = 'http://192.168.1.2:8000/crop_logs/delete_all';
+const device_delete_url='http://192.168.1.2:8000/device/delete_all';
 const websocket_url = 'ws://192.168.1.2:8000/ws'; // WebSocket URL
 const websocket_link ='ws://192.168.1.2:8000/link';
 const notifdelete_url = 'http://192.168.1.2:8000/notifications/delete_all'
@@ -28,13 +29,14 @@ const MyComponent = ({ children }) => {
   const [wsmessage, setwsMessages] = useState({})
   const [notificationMessage, setNotificationMessage] = useState("");  // State for notification message
   const [farmer, setFarmer] = useState(null); // State for farmer data
-  const [device, setDevice] = useState();
+  const [device, setDevice] = useState({});
   let is_water_low = false;
   let is_soil_low = false;
 
 
-  const setdev = (device) =>{
-    setDevice(device)
+  const setdev = async (data) =>{
+    // console.log('random bs',data)
+    await setDevice(data)
   }
   // WebSocket connection setup
   const setupWebSocket = () => {
@@ -45,11 +47,11 @@ const MyComponent = ({ children }) => {
       setWebSocket(ws);  // Store WebSocket connection
     };
   
-    ws.onmessage = (event) => {
+    ws.onmessage = async (event) => {
       if (event.data.includes("WATER")) {
         return
       }
-      scheduleNotification(JSON.parse(event.data));
+      await scheduleNotification(JSON.parse(event.data));
     };
   
     ws.onclose = (event) => {
@@ -72,10 +74,10 @@ const MyComponent = ({ children }) => {
       
       console.log(message.message)
       console.log(data.id)
-      // console.log(device.id)
-      if(data.id) {
+      console.log(device)
+      // if(data.id == device.id) {
         setwsMessages(data);
-      }
+      // }
         
       
       if (data.water_level == "Low" && !is_water_low){
@@ -296,6 +298,17 @@ const MyComponent = ({ children }) => {
       throw error;
     }
   };
+
+  const devicedelete = async() => {
+    try {
+      const response = await axios.delete(device_delete_url);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting devices:', error.message);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       await AsyncStorage.removeItem('farmerId');  // Clear farmer ID on logout
@@ -331,6 +344,7 @@ const MyComponent = ({ children }) => {
       notificationMessage,  // Pass the notificationMessage state to children components
       sendMessage,
       websocket,
+      devicedelete,
       setdev
        // WebSocket message sender
     }}>
