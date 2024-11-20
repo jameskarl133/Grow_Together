@@ -90,9 +90,10 @@ export default function Login({ navigation }) {
                 />
               </View>
 
-              <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+              <TouchableOpacity onPress={() => navigation.navigate('ForgotPass')}>
                 <Text style={styles.linkText}>Forgot password?</Text>
               </TouchableOpacity>
+
 
               <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
                 <Text style={styles.linkText}>Sign up</Text>

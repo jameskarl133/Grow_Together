@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { StyleSheet, Text, TextInput, Button, ScrollView, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, Button, ScrollView, TouchableOpacity, View, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -17,6 +17,8 @@ export default function SignUp() {
   const [password, setPassword] = useState('');
   const [field, setField] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [securityQuestion, setSecurityQuestion] = useState('');
+  const [securityAnswer, setSecurityAnswer] = useState('');
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [date, setDate] = useState(new Date());
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -34,11 +36,20 @@ export default function SignUp() {
     setDob(currentDate.toISOString().split('T')[0]);
   };
 
-  const handleSignUp = async () => {
-    if (password !== confirmPassword) {
-      alert('Passwords do not match!');
-      return;
+  const validateFields = () => {
+    if (!firstName || !lastName || !dob || !address || !email || !phoneNumber || !username || !password || !confirmPassword || !field || !securityQuestion || !securityAnswer) {
+      Alert.alert('Error', 'Please fill out all required fields.');
+      return false;
     }
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match!');
+      return false;
+    }
+    return true;
+  };
+
+  const handleSignUp = async () => {
+    if (!validateFields()) return;
 
     const farmerData = {
       fname: firstName,
@@ -51,14 +62,16 @@ export default function SignUp() {
       phno: phoneNumber,
       username: username,
       password: password,
+      security_question: securityQuestion,
+      security_answer: securityAnswer,
       status: 'active', // or any default status you prefer
     };
-    console.log(dob.toString());
+
     try {
       const response = await postFarmerData(farmerData);
-      alert('Sign Up Successful');
+      Alert.alert('Success', 'Sign Up Successful');
     } catch (error) {
-      alert('Error during sign up');
+      Alert.alert('Error', 'Error during sign up');
     }
   };
 
@@ -66,7 +79,7 @@ export default function SignUp() {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.textColor}>Sign Up</Text>
       <TextInput placeholder="First Name" style={styles.input} value={firstName} onChangeText={setFirstName} />
-      <TextInput placeholder="Middle Name" style={styles.input} value={middleName} onChangeText={setMiddleName} />
+      <TextInput placeholder="Middle Name (Optional)" style={styles.input} value={middleName} onChangeText={setMiddleName} />
       <TextInput placeholder="Last Name" style={styles.input} value={lastName} onChangeText={setLastName} />
 
       <View style={styles.pickerContainer}>
@@ -103,6 +116,17 @@ export default function SignUp() {
           <Ionicons name={confirmPasswordVisible ? 'eye-off' : 'eye'} size={24} color="gray" />
         </TouchableOpacity>
       </View>
+
+      <View style={styles.pickerContainer}>
+        <Picker selectedValue={securityQuestion} onValueChange={(itemValue) => setSecurityQuestion(itemValue)}>
+          <Picker.Item label="Select a security question" value="" enabled={false} style={{ color: 'gray' }} />
+          <Picker.Item label="What is the name of your first pet?" value="What is the name of your first pet?" />
+          <Picker.Item label="What is your mother's maiden name?" value="What is your mother's maiden name?" />
+          <Picker.Item label="What was the name of your first school?" value="What was the name of your first school?" />
+        </Picker>
+      </View>
+
+      <TextInput placeholder="Answer" style={styles.input} value={securityAnswer} onChangeText={setSecurityAnswer} />
 
       <Button title="Sign Up" onPress={handleSignUp} color="green" />
     </ScrollView>
