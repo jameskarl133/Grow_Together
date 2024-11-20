@@ -7,19 +7,19 @@ import { initializeNotifications } from './app/screens/initialize';
 
 initializeNotifications();
 
-const farmer_url = 'http://192.168.1.2:8000/farmer';
-const crop_url = 'http://192.168.1.2:8000/crop';
-const crop_harvested_url = 'http://192.168.1.2:8000/crop/harvested';
-const crop_planted_url = 'http://192.168.1.2:8000/crop/planted';
-const farmer_login_url = 'http://192.168.1.2:8000/farmer/login';
-const crop_log_url = 'http://192.168.1.2:8000/crop_log';
-const farmer_profile_url = 'http://192.168.1.2:8000/farmer/profile';
-const crop_logs_delete_all_url = 'http://192.168.1.2:8000/crop_logs/delete_all';
-const device_delete_url='http://192.168.1.2:8000/device/delete_all';
-const websocket_url = 'ws://192.168.1.2:8000/ws'; // WebSocket URL
-const websocket_link ='ws://192.168.1.2:8000/link';
-const notifdelete_url = 'http://192.168.1.2:8000/notifications/delete_all'
-const listofdev_url = 'http://192.168.1.2:8000/device';
+const farmer_url = 'http://192.168.137.1:8000/farmer';
+const crop_url = 'http://192.168.137.1:8000/crop';
+const crop_harvested_url = 'http://192.168.137.1:8000/crop/harvested';
+const crop_planted_url = 'http://192.168.137.1:8000/crop/planted';
+const farmer_login_url = 'http://192.168.137.1:8000/farmer/login';
+const crop_log_url = 'http://192.168.137.1:8000/crop_log';
+const farmer_profile_url = 'http://192.168.137.1:8000/farmer/profile';
+const crop_logs_delete_all_url = 'http://192.168.137.1:8000/crop_logs/delete_all';
+const device_delete_url='http://192.168.137.1:8000/device/delete_all';
+const websocket_url = 'ws://192.168.137.1:8000/ws'; // WebSocket URL
+const websocket_link ='ws://192.168.137.1:8000/link';
+const notifdelete_url = 'http://192.168.137.1:8000/notifications/delete_all'
+const listofdev_url = 'http://192.168.137.1:8000/device';
 
 export const ApiContext = createContext();
 

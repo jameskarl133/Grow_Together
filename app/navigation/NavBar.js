@@ -124,13 +124,13 @@ function CustomDrawerContent(props) {
             <Ionicons name="person-outline" size={size} color={color} />
           )}
         />
-        {/* <DrawerItem
+        <DrawerItem
           label="Logs"
           onPress={() => props.navigation.navigate('Logs')}
           icon={({ color, size }) => (
             <Ionicons name="list-outline" size={size} color={color} />
           )}
-        /> */}
+        />
         <View style={styles.line} />
         {/* Logout button at the bottom */}
         <DrawerItem
@@ -164,7 +164,7 @@ const NavBar = () => {
       <Drawer.Screen name="ConnectDevice" component={ConnectDevice} />
       <Drawer.Screen name="Monitor Crop" component={MonitorCrop} />
       <Drawer.Screen name="ViewProfile" component={ViewProfile} />
-      {/* <Drawer.Screen name="Logs" component={Logs} /> */}
+      <Drawer.Screen name="Logs" component={Logs} />
       <Drawer.Screen name="Notification" component={Notification} />
     </Drawer.Navigator>
   );
