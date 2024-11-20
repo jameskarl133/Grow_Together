@@ -6,6 +6,10 @@ const DeviceList = ({ navigation }) => {
     const { fetchlistofdev , setdev, devicedelete } = useContext(ApiContext); // Access fetchlistofdev from context
     const [devices, setDevices] = useState([]);
     const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        loadDevices();
+    }, []);
     
 
     const loadDevices = async () => {

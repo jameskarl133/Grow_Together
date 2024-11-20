@@ -48,7 +48,7 @@ const MyComponent = ({ children }) => {
     };
   
     ws.onmessage = async (event) => {
-      if (event.data.includes("WATER")) {
+      if (event.data.includes("WATER") || event.data.includes("delete")) {
         return
       }
       await scheduleNotification(JSON.parse(event.data));
@@ -302,9 +302,15 @@ const MyComponent = ({ children }) => {
   const devicedelete = async() => {
     try {
       const response = await axios.delete(device_delete_url);
+      try{
+        websocket.send("delete")
+      } catch (error) {
+        console.log('Error deleting devices:', error.message);
+        throw error;
+      }
       return response.data;
     } catch (error) {
-      console.error('Error deleting devices:', error.message);
+      console.log('Error deleting devices:', error.message);
       throw error;
     }
   };
