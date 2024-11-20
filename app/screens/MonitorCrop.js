@@ -1,15 +1,73 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { View, StyleSheet, Text, Button, Alert, Pressable } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ApiContext } from '../../Provider';
 import { useFocusEffect } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';  // Importing the icon library
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const PlantedCrops = () => {
   const [crops, setCrops] = useState([]);
-  const { fetchCropsPlanted, updateCropToHarvest, updateCropLog } = useContext(ApiContext);
+  const [soilMoisture, setSoilMoisture] = useState(null);
+  const [waterLevel, setWaterLevel] = useState(null);
+  const [temperature, setTemperature] = useState(null);
+  const { fetchCropsPlanted, updateCropToHarvest, updateCropLog, websocket, wsmessage } = useContext(ApiContext);
   const [selectedCrop, setSelectedCrop] = useState(null);
-  const [buttonPressed, setButtonPressed] = useState(false); // To track button press state
+  const [moistureLevel, setMoistureLevel] = useState('Loading...');
+  const [isWatering, setIsWatering] = useState(false);
+
+  // Listen for WebSocket messages and update the state
+  const categorizeLevel = (value) => {
+    if (value >= 3000) return 'Low';
+    if (value >= 2000) return 'Mid';
+    return 'High';
+  };
+  useEffect(() => {
+    if (wsmessage && wsmessage.soil_moisture !== null) {
+      const level = categorizeLevel(wsmessage.soil_moisture);
+      setMoistureLevel(level);
+    }
+
+
+  //   return () => {
+  //     // if (websocket) {
+  //     //   websocket.onmessage = null; // Clean up the WebSocket listener
+  //     // }
+  //   };
+  }, [wsmessage]);
+
+  // const setupWebSocket = () => {
+  //   const ws = new WebSocket(websocket_control);
+
+  //   ws.onopen = () => {
+  //     console.log('Connected to WebSocket');
+  //     // setWebSocket(ws);  // Store WebSocket connection
+  //   };
+  
+  //   ws.onmessage = (event) => {
+  //     console.log(JSON.parse(event.data));
+  //   };
+  
+  //   ws.onclose = (event) => {
+  //     console.log('WebSocket disconnected', event.reason);
+  //   };
+  
+  //   ws.onerror = (error) => {
+  //     console.error('WebSocket Error:', error.message);
+  //   };
+  // };
+
+  // const handleFetchData = () => {
+  //   if (websocket && websocket.readyState === WebSocket.OPEN) {
+  //     const message = JSON.stringify({
+  //       command: 'FETCH_DATA',
+  //     });
+
+  //     websocket.send(message); // Request the data from ESP32
+  //   } else {
+  //     Alert.alert('Connection Error', 'WebSocket is not connected.');
+  //   }
+  // };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -36,31 +94,46 @@ const PlantedCrops = () => {
     if (selectedCrop) {
       try {
         await updateCropToHarvest(selectedCrop.crop_name);
-        console.log(`Crop ${selectedCrop.crop_name} status updated to harvested`);
-
         await updateCropLog(selectedCrop.crop_name);
-        console.log(`Crop log for ${selectedCrop.crop_name} updated with harvest date`);
 
-        Alert.alert(
-          "Success",
-          `Crop ${selectedCrop.crop_name} has been harvested.`
-        );
-
+        Alert.alert("Success", `Crop ${selectedCrop.crop_name} has been harvested.`);
         fetchCrops();
-
       } catch (error) {
         console.error('Error updating crop status:', error.message);
-        Alert.alert(
-          "Error",
-          `Failed to update crop status: ${error.message}`
-        );
+        Alert.alert("Error", `Failed to update crop status: ${error.message}`);
       }
     }
   };
 
-  const handleWatering = () => {
-    Alert.alert("Watering", "You watered the crops!");
-  };
+const handleWateringToggle = () => {
+  if (websocket && websocket.readyState === WebSocket.OPEN) {
+    // Determine the message to send
+    const command = isWatering ? 'WATER_OFF' : 'WATER_ON';
+    
+    const message = {
+      message: command // This will be either 'WATER_ON' or 'WATER_OFF'
+    };
+    websocket.send(isWatering ? 'WATER_OFF' : 'WATER_ON');
+
+    
+    // Toggle the watering state
+    setIsWatering(!isWatering);
+    Alert.alert('Water Pump', `Water pump turned ${isWatering ? 'off' : 'on'}`);
+  } else {
+    Alert.alert('Connection Error', 'WebSocket is not connected.');
+  }
+};
+
+  // value = wsmessage.soil_moisture
+  // const categorizeLevel = (value) => {
+  //   moisture_level = ''
+  //   if (value <= 4095 || value >= 3000) 
+  //     moisture_level ='Low';
+  //   if (value <= 2999 || value >= 2000)
+  //     moisture_level = 'Mid';
+  //   else
+  //     moisture_level = 'High'
+  // };
 
   return (
     <LinearGradient colors={['#a8e6cf', '#f5f5f5']} style={styles.container}>
@@ -77,27 +150,60 @@ const PlantedCrops = () => {
             </View>
           )}
 
-          <Text style={styles.infoText}>standby</Text>
-          <Button
-            title="Harvest"
-            onPress={handleUpdateStatus}
-            color="#FF7F50"
-          />
+          <Text style={styles.infoText}>Current Crop Status</Text>
+
+          <View style={styles.statCard}>
+            <Ionicons name="speedometer-outline" size={40} color="#3498db" />
+            <View style={styles.statTextContainer}>
+              <Text style={styles.statLabel}>Moisture Level</Text>
+              <Text style={styles.statValue}>{moistureLevel}</Text>
+            </View>
+          </View>
+
+          <View style={styles.statCard}>
+            <Ionicons name="water-outline" size={40} color="#1abc9c" />
+            <View style={styles.statTextContainer}>
+              <Text style={styles.statLabel}>Water Level</Text>
+              <Text style={styles.statValue}>{wsmessage.water_level !== null ? wsmessage.water_level : 'Loading...'}</Text>
+            </View>
+          </View>
+
+          <View style={styles.statCard}>
+            <Ionicons name="thermometer-outline" size={40} color="#e74c3c" />
+            <View style={styles.statTextContainer}>
+              <Text style={styles.statLabel}>Temperature</Text>
+               <Text style={styles.statValue}>{wsmessage.temperature !== null ? wsmessage.temperature + '°C' : 'Loading...'}</Text>
+            </View>
+          </View>
+
+          <Button title="Harvest" onPress={handleUpdateStatus} color="#FF7F50" />
         </>
       )}
 
-      {/* Floating Watering Can Button */}
-      <Pressable
-        style={[
-          styles.floatingButton,
-          buttonPressed && styles.floatingButtonPressed
-        ]}
-        onPressIn={() => setButtonPressed(true)} 
-        onPressOut={() => setButtonPressed(false)}
-        onPress={handleWatering} 
-      >
-        <Icon name="watering-can" size={24} color="#fff" />
-      </Pressable>
+      {/* Watering Can Icon Toggle, only show if crops are present */}
+      {crops.length > 0 && (
+        <Pressable
+          style={[
+            styles.wateringIconContainer,
+            isWatering && styles.wateringIconActive
+          ]}
+          onLongPress={
+            ()=>{
+            console.log('Websocket state:', websocket?.readyState)
+            websocket.send("WATER_ON")
+            console.log('pressed')
+            }
+            }
+          onPressOut={
+            ()=>{
+            websocket.send("WATER_OFF")
+            console.log('unpressed')
+            }
+            }
+        >
+          <Ionicons name="water" size={24} color="#fff" />
+        </Pressable>
+      )}
     </LinearGradient>
   );
 };
@@ -129,7 +235,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   icon: {
-    marginRight: 16,  // Space between the icon and the crop name
+    marginRight: 16,
   },
   crops: {
     fontSize: 20,
@@ -142,7 +248,32 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     color: '#666',
   },
-  floatingButton: {
+  statCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 16,
+    marginVertical: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  statTextContainer: {
+    marginLeft: 16,
+  },
+  statLabel: {
+    fontSize: 16,
+    color: '#333',
+  },
+  statValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  wateringIconContainer: {
     position: 'absolute',
     bottom: 30,
     right: 20,
@@ -158,7 +289,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  floatingButtonPressed: {
+  wateringIconActive: {
     backgroundColor: '#388E3C',
   },
 });

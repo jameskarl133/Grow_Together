@@ -6,6 +6,7 @@ import Dashboard from '../screens/Dashboard';
 import MonitorCrop from '../screens/MonitorCrop';
 import ConnectDevice from '../screens/ConnectDevice';
 import SearchCrop from '../screens/SearchCrop';
+import Listofdev from '../screens/listofdev';
 import SelectCrop from '../screens/SelectCrop';
 import ViewProfile from '../screens/ViewProfile';
 import Logs from '../screens/logs';
@@ -81,14 +82,7 @@ function CustomDrawerContent(props) {
             <Ionicons name="add-outline" size={size} color={color} />
           )}
         /> */}
-        <DrawerItem
-          label="Search Crop"
-          onPress={() => props.navigation.navigate('SearchCrop')}
-          icon={({ color, size }) => (
-            <Ionicons name="search-outline" size={size} color={color} />
-          )}
-        />
-        <DrawerItem
+        {/* <DrawerItem
           label="Select Crop"
           onPress={() => props.navigation.navigate('SelectCrop')}
           icon={({ color, size }) => (
@@ -98,6 +92,13 @@ function CustomDrawerContent(props) {
         <DrawerItem
           label="Connect To Device"
           onPress={() => props.navigation.navigate('ConnectDevice')}
+          icon={({ color, size }) => (
+            <Ionicons name="bluetooth-outline" size={size} color={color} />
+          )}
+        />     */}
+        <DrawerItem
+          label="List of Devices"
+          onPress={() => props.navigation.navigate('Listofdev')}
           icon={({ color, size }) => (
             <Ionicons name="wifi" size={size} color={color} />
           )}
@@ -151,9 +152,10 @@ const DrawerNav = () => {
       <Drawer.Screen name="Dashboard" component={Dashboard} />
       {/* <Drawer.Screen name="Add Crop" component={AddCrop} /> */}
       <Drawer.Screen name="SearchCrop" component={SearchCrop} />
-      <Drawer.Screen name="SelectCrop" component={SelectCrop} />
-      <Drawer.Screen name="ConnectDevice" component={ConnectDevice} />
-      <Drawer.Screen name="MonitorCrop" component={MonitorCrop} />
+      {/* <Drawer.Screen name="SelectCrop" component={SelectCrop} /> */}
+      {/* <Drawer.Screen name="ConnectDevice" component={ConnectDevice} /> */}
+      <Drawer.Screen name ="Listofdev" component={Listofdev}/>
+      {/* <Drawer.Screen name="Monitor Crop" component={MonitorCrop} /> */}
       <Drawer.Screen name="ViewProfile" component={ViewProfile} />
       <Drawer.Screen name="Logs" component={Logs} />
       <Drawer.Screen name="Notification" component={Notification} />

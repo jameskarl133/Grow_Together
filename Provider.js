@@ -4,40 +4,40 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from "expo-notifications";
 import { initializeNotifications } from './app/screens/initialize';
 
-<<<<<<< HEAD
-const farmer_url = 'http://192.168.1.17:8000/farmer';
-const crop_url = 'http://192.168.1.17:8000/crop';
-const crop_harvested_url = 'http://192.168.1.17:8000/crop/harvested';
-const crop_planted_url = 'http://192.168.1.17:8000/crop/planted';
-const farmer_login_url = 'http://192.168.1.17:8000/farmer/login';
-const crop_log_url = 'http://192.168.1.17:8000/crop_log';
-const farmer_profile_url = 'http://192.168.1.17:8000/farmer/profile';
-const crop_logs_delete_all_url = 'http://192.168.1.17:8000/crop_logs/delete_all';
-const websocket_url = 'ws://192.168.1.17:8000/ws'; // WebSocket URL
-=======
-// Initialize notifications
+
 initializeNotifications();
 
-const farmer_url = 'http://192.168.1.7:8000/farmer';
-const crop_url = 'http://192.168.1.7:8000/crop';
-const crop_harvested_url = 'http://192.168.1.7:8000/crop/harvested';
-const crop_planted_url = 'http://192.168.1.7:8000/crop/planted';
-const farmer_login_url = 'http://192.168.1.7:8000/farmer/login';
-const crop_log_url = 'http://192.168.1.7:8000/crop_log';
-const farmer_profile_url = 'http://192.168.1.7:8000/farmer/profile';
-const crop_logs_delete_all_url = 'http://192.168.1.7:8000/crop_logs/delete_all';
-const websocket_url = 'ws://192.168.1.7:8000/ws'; // WebSocket URL
-const notifdelete_url = 'http://192.168.1.7:8000/notifications/delete_all'
->>>>>>> 719bca5a0e03e6b343187c56d229b265f7d806a2
+const farmer_url = 'http://192.168.1.2:8000/farmer';
+const crop_url = 'http://192.168.1.2:8000/crop';
+const crop_harvested_url = 'http://192.168.1.2:8000/crop/harvested';
+const crop_planted_url = 'http://192.168.1.2:8000/crop/planted';
+const farmer_login_url = 'http://192.168.1.2:8000/farmer/login';
+const crop_log_url = 'http://192.168.1.2:8000/crop_log';
+const farmer_profile_url = 'http://192.168.1.2:8000/farmer/profile';
+const crop_logs_delete_all_url = 'http://192.168.1.2:8000/crop_logs/delete_all';
+const device_delete_url='http://192.168.1.2:8000/device/delete_all';
+const websocket_url = 'ws://192.168.1.2:8000/ws'; // WebSocket URL
+const websocket_link ='ws://192.168.1.2:8000/link';
+const notifdelete_url = 'http://192.168.1.2:8000/notifications/delete_all'
+const listofdev_url = 'http://192.168.1.2:8000/device';
 
 export const ApiContext = createContext();
 
 const MyComponent = ({ children }) => {
   const [websocket, setWebSocket] = useState(null);
   const [messages, setMessages] = useState([]);  // Store WebSocket messages
+  const [wsmessage, setwsMessages] = useState({})
   const [notificationMessage, setNotificationMessage] = useState("");  // State for notification message
   const [farmer, setFarmer] = useState(null); // State for farmer data
+  const [device, setDevice] = useState({});
+  let is_water_low = false;
+  let is_soil_low = false;
 
+
+  const setdev = async (data) =>{
+    // console.log('random bs',data)
+    await setDevice(data)
+  }
   // WebSocket connection setup
   const setupWebSocket = () => {
     const ws = new WebSocket(websocket_url);
@@ -47,12 +47,17 @@ const MyComponent = ({ children }) => {
       setWebSocket(ws);  // Store WebSocket connection
     };
   
-    ws.onmessage = (event) => {
-      scheduleNotification(JSON.parse(event.data));
+    ws.onmessage = async (event) => {
+      if (event.data.includes("WATER") || event.data.includes("delete")) {
+        return
+      }
+      await scheduleNotification(JSON.parse(event.data));
     };
   
     ws.onclose = (event) => {
       console.log('WebSocket disconnected', event.reason);
+      setWebSocket(ws);
+      console.log('reconnected')
     };
   
     ws.onerror = (error) => {
@@ -61,15 +66,48 @@ const MyComponent = ({ children }) => {
   };
 
   const scheduleNotification = async (message) => {
+    
+    // console.log(wsmessage)
     try {
-      console.log('notifying:', message.message);
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'New Message',
-          body: message.message, // Display the fetched message from the database
-        },
-        trigger: null, // Display immediately
-      });
+      // console.log('notifying:', message.message);
+      let data = JSON.parse(message.message)
+      
+      // console.log(message.message)
+      // console.log(data.id)
+      // console.log(device)
+      // if(data.id == device.id) {
+        setwsMessages(data);
+      // }
+        
+      
+      if (data.water_level == "Low" && !is_water_low){
+        is_water_low = true
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: 'New Message',
+            body: "Low water Level",
+          },
+          trigger: null,
+        });
+      }
+      else if (data.water_level != "Low" && is_water_low){
+        is_water_low = false
+      }
+      if (data.soil_moisture >= 3000 && !is_soil_low){
+        is_soil_low = true;
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: 'New Message',
+            body: "Low soil moisture", // Display the fetched message from the database
+          },
+          
+          trigger: null, // Display immediately
+        });
+      }
+      else if (data.soil_moisture < 3000 && is_soil_low){
+        is_soil_low = false;
+      }
+      
     } catch (error) {
       console.error('Error scheduling notification:', error);
     }
@@ -219,6 +257,16 @@ const MyComponent = ({ children }) => {
     }
   };
 
+  const fetchlistofdev = async () => {
+    try {
+      const response = await axios.get(listofdev_url);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching crop logs:', error.message);
+      throw error;
+    }
+  };
+
   // Update crop log to harvested
   const updateCropLog = async (cropName) => {
     try {
@@ -251,12 +299,43 @@ const MyComponent = ({ children }) => {
     }
   };
 
+  const devicedelete = async() => {
+    try {
+      const response = await axios.delete(device_delete_url);
+      try{
+        websocket.send("delete")
+      } catch (error) {
+        console.log('Error deleting devices:', error.message);
+        throw error;
+      }
+      return response.data;
+    } catch (error) {
+      console.log('Error deleting devices:', error.message);
+      throw error;
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await AsyncStorage.removeItem('farmerId');  // Clear farmer ID on logout
+      if (websocket) {
+        websocket.close();  // Close WebSocket connection on logout
+        setWebSocket(null);  // Clear WebSocket state
+      }
+      setFarmer(null);  // Clear farmer data state
+    } catch (error) {
+      console.error('Error during logout:', error.message);
+      throw error;
+    }
+  };
+
   return (
     <ApiContext.Provider value={{
       postFarmerData,
       deletenotifs,
       postCropData,
       login,
+      logout,
       viewFarmerProfile,
       updateFarmerProfile,
       fetchCropsHarvested,
@@ -266,9 +345,14 @@ const MyComponent = ({ children }) => {
       fetchCropLogs,
       deleteLogsExceptUnharvested,
       updateCropLog,
-      messages,
+      fetchlistofdev,
+      wsmessage,
       notificationMessage,  // Pass the notificationMessage state to children components
-      sendMessage  // WebSocket message sender
+      sendMessage,
+      websocket,
+      devicedelete,
+      setdev
+       // WebSocket message sender
     }}>
       {children}
     </ApiContext.Provider>
