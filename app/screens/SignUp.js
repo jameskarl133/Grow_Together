@@ -34,7 +34,15 @@ export default function SignUp() {
     setDob(currentDate.toISOString().split('T')[0]);
   };
 
+  const validatePassword = (password) =>{
+    return password.length >= 8 && password.length <= 16 && /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    }
+
   const handleSignUp = async () => {
+    if (!validatePassword(password)) {
+      alert('Password must be between 8 and 16 characters and must have at least one special character.');
+      return;
+    }
     if (password !== confirmPassword) {
       alert('Passwords do not match!');
       return;
