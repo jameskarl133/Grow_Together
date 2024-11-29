@@ -14,7 +14,7 @@ const NotificationDisplay = () => {
     fetchSavedMessages();
 
     // Create a new WebSocket connection
-    // ws.current = new WebSocket('ws://192.168.1.7:8000/ws');
+    // ws.current = new WebSocket('ws://192.168.137.141:8000/ws');
 
     // // Handle WebSocket message reception
     // ws.current.onmessage = () => {
@@ -33,7 +33,7 @@ const NotificationDisplay = () => {
   // Function to fetch saved messages from the backend
   const fetchSavedMessages = async () => {
     try {
-      const response = await fetch('http://192.168.137.1:8000/notification');
+      const response = await fetch('http://192.168.137.141:8000/notification');
       const data = await response.json();
       console.log('Fetched messages:', data);
 
@@ -50,7 +50,7 @@ const NotificationDisplay = () => {
   // // Function to fetch the latest message from the database and trigger a notification
   // const fetchLatestMessageFromDatabase = async () => {
   //   try {
-  //     const response = await fetch('http://192.168.137.1:8000/notification');
+  //     const response = await fetch('http://192.168.137.141:8000/notification');
   //     const data = await response.json();
   //     console.log('Latest message:', data[0]);
 
@@ -75,7 +75,7 @@ const NotificationDisplay = () => {
   // Function to delete all notifications
   const deletenotifs = async () => {
     try {
-      const response = await fetch('http://192.168.137.1:8000/notifications/delete_all', {
+      const response = await fetch('http://192.168.137.141:8000/notifications/delete_all', {
         method: 'DELETE',
       });
       const result = await response.json();
