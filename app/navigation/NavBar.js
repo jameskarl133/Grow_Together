@@ -110,13 +110,13 @@ function CustomDrawerContent(props) {
             <Ionicons name="wifi" size={size} color={color} />
           )}
         />
-        {/* <DrawerItem
+        <DrawerItem
           label="Monitor Crop"
           onPress={() => props.navigation.navigate('MonitorCrop')}
           icon={({ color, size }) => (
             <Ionicons name="settings-outline" size={size} color={color} />
           )}
-        /> */}
+        />
         <DrawerItem
           label="View Profile"
           onPress={() => props.navigation.navigate('ViewProfile')}
@@ -160,9 +160,9 @@ const NavBar = () => {
       {/* <Drawer.Screen name="Add Crop" component={AddCrop} /> */}
       <Drawer.Screen name="SearchCrop" component={SearchCrop} />
       <Drawer.Screen name ="Listofdev" component={Listofdev}/>
-      {/* <Drawer.Screen name="SelectCrop" component={SelectCrop} /> */}
+      <Drawer.Screen name="SelectCrop" component={SelectCrop} />
       <Drawer.Screen name="ConnectDevice" component={ConnectDevice} />
-      <Drawer.Screen name="Monitor Crop" component={MonitorCrop} />
+      <Drawer.Screen name="MonitorCrop" component={MonitorCrop} />
       <Drawer.Screen name="ViewProfile" component={ViewProfile} />
       {/* <Drawer.Screen name="Logs" component={Logs} /> */}
       <Drawer.Screen name="Notification" component={Notification} />
