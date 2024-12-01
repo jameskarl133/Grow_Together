@@ -110,13 +110,13 @@ function CustomDrawerContent(props) {
             <Ionicons name="wifi" size={size} color={color} />
           )}
         />
-        <DrawerItem
+        {/* <DrawerItem
           label="Monitor Crop"
           onPress={() => props.navigation.navigate('MonitorCrop')}
           icon={({ color, size }) => (
             <Ionicons name="settings-outline" size={size} color={color} />
           )}
-        />
+        /> */}
         <DrawerItem
           label="View Profile"
           onPress={() => props.navigation.navigate('ViewProfile')}

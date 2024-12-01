@@ -36,7 +36,7 @@ const DeviceList = ({ navigation }) => {
 
     const handleDevicePress = (device) => {
         setdev(device);
-        navigation.navigate('Monitor Crop', { device });
+        navigation.navigate('MonitorCrop', { device });
     };
 
     if (loading) {
