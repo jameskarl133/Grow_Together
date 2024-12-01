@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { StyleSheet, Text, TextInput, Button, ScrollView, TouchableOpacity, View, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { ApiContext } from '../../Provider';  // Adjust the path if necessary
 
@@ -41,11 +42,19 @@ export default function SignUp() {
       Alert.alert('Error', 'Please fill out all required fields.');
       return false;
     }
+    if (!validatePassword(password)) {
+      Alert.alert('Error', 'Password must be between 8 and 16 characters and must have at least one special character.');
+      return false;
+    }
     if (password !== confirmPassword) {
       Alert.alert('Error', 'Passwords do not match!');
       return false;
     }
     return true;
+  };
+
+  const validatePassword = (password) => {
+    return password.length >= 8 && password.length <= 16 && /[!@#$%^&*(),.?":{}|<>]/.test(password);
   };
 
   const handleSignUp = async () => {
