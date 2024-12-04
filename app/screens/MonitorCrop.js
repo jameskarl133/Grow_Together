@@ -11,10 +11,12 @@ const PlantedCrops = () => {
   const [soilMoisture, setSoilMoisture] = useState(null);
   const [waterLevel, setWaterLevel] = useState(null);
   const [temperature, setTemperature] = useState(null);
-  const { fetchCropsPlanted, updateCropToHarvest, updateCropLog, websocket, wsmessage } = useContext(ApiContext);
+  const { fetchCropsPlanted, updateCropToHarvest, updateCropLog, websocket, fetchCropLogs, wsmessage } = useContext(ApiContext);
   const [selectedCrop, setSelectedCrop] = useState(null);
   const [moistureLevel, setMoistureLevel] = useState('Loading...');
   const [isWatering, setIsWatering] = useState(false);
+  const [plantedDays, setPlantedDays] = useState(0);
+  const [canHarvest, setCanHarvest] = useState(false);
 
   // Listen for WebSocket messages and update the state
   const categorizeLevel = (value) => {
@@ -93,9 +95,33 @@ const PlantedCrops = () => {
   const handleUpdateStatus = async () => {
     if (selectedCrop) {
       try {
+        const logs = await fetchCropLogs();
+        const cropLog = logs.find(log => log.crop_name === selectedCrop.crop_name);
+        
+        // Get today's date
+        const today = new Date().toISOString().split('T')[0];
+        const estimatedDays = parseInt(selectedCrop.crop_estdate);
+  
+        // Use Calendar's selected date to track days
+        const markedDates = {
+          [today]: {
+            selected: true,
+            selectedColor: 'green',
+          }
+        };
+        const daysGrown = Object.keys(markedDates).length;
+  
+        if (daysGrown < estimatedDays) {
+          Alert.alert(
+            "Cannot Harvest Yet", 
+            `Current day: ${daysGrown}\nNeeds ${estimatedDays} days before harvesting.\nWait ${estimatedDays - daysGrown} more days.`
+          );
+          return;
+        }
+  
         await updateCropToHarvest(selectedCrop.crop_name);
         await updateCropLog(selectedCrop.crop_name);
-
+  
         Alert.alert("Success", `Crop ${selectedCrop.crop_name} has been harvested.`);
         fetchCrops();
       } catch (error) {
@@ -104,6 +130,18 @@ const PlantedCrops = () => {
       }
     }
   };
+
+  const loadLogs = async () => {
+    try {
+      const fetchedLogs = await fetchCropLogs();
+      setLogs(fetchedLogs);
+    } catch (error) {
+      console.error('Error fetching crop logs:', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
 const handleWateringToggle = () => {
   if (websocket && websocket.readyState === WebSocket.OPEN) {
@@ -145,8 +183,16 @@ const handleWateringToggle = () => {
         <>
           {selectedCrop && (
             <View style={styles.cropContainer}>
-              <Icon name="sprout" size={50} color="#4CAF50" style={styles.icon} />
-              <Text style={styles.crops}>{selectedCrop.crop_name}</Text>
+              <View style={styles.headerRow}>
+                <Icon name="sprout" size={50} color="#4CAF50" style={styles.icon} />
+                <Text style={styles.crops}>{selectedCrop.crop_name}</Text>
+              </View>
+              <View style={styles.detailsColumn}>
+                <Text style={styles.crops_input}>{selectedCrop.crop_soil}</Text>
+                <Text style={styles.crops_input}>{selectedCrop.crop_moisture}</Text>
+                <Text style={styles.crops_input}>{selectedCrop.crop_temp + "°C"}</Text>
+                <Text style={styles.crops_input}>Date to harvest: {selectedCrop.crop_estdate}</Text>
+              </View>
             </View>
           )}
 
@@ -234,6 +280,9 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
+  detailsColumn: {
+    marginLeft: 66, // This aligns with the icon + its margin
+  },
   icon: {
     marginRight: 16,
   },
@@ -241,6 +290,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
+  },
+  crops_input: {
+    fontSize: 16,
+    color: '#666',
   },
   infoText: {
     fontSize: 18,
