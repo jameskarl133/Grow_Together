@@ -5,6 +5,7 @@ import { ApiContext } from '../../Provider';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import moment from 'moment';
 
 const PlantedCrops = () => {
   const [crops, setCrops] = useState([]);
@@ -98,23 +99,25 @@ const PlantedCrops = () => {
         const logs = await fetchCropLogs();
         const cropLog = logs.find(log => log.crop_name === selectedCrop.crop_name);
         
-        // Get today's date
-        const today = new Date().toISOString().split('T')[0];
+        if (!cropLog || !cropLog.crop_date_planted) {
+          Alert.alert("Error", "No planting date found for this crop");
+          return;
+        }
+  
+        const plantedDate = moment(cropLog.crop_date_planted);
         const estimatedDays = parseInt(selectedCrop.crop_estdate);
+        const harvestDate = moment(plantedDate).add(estimatedDays, 'days');
+        const currentDate = moment();
+        // console.log(plantedDate.format('MM/DD/YYYY'));
+        // console.log(harvestDate.format('MM/DD/YYYY'));
+        // console.log(currentDate.format('MM/DD/YYYY'));
+        // console.log(estimatedDays);
   
-        // Use Calendar's selected date to track days
-        const markedDates = {
-          [today]: {
-            selected: true,
-            selectedColor: 'green',
-          }
-        };
-        const daysGrown = Object.keys(markedDates).length;
-  
-        if (daysGrown < estimatedDays) {
+        if (currentDate.isBefore(harvestDate)) {
+          const daysRemaining = harvestDate.diff(currentDate, 'days');
           Alert.alert(
-            "Cannot Harvest Yet", 
-            `Current day: ${daysGrown}\nNeeds ${estimatedDays} days before harvesting.\nWait ${estimatedDays - daysGrown} more days.`
+            "Cannot Harvest Yet",
+            `Planted on: ${plantedDate.format('MM/DD/YYYY')}\nCan harvest on: ${harvestDate.format('MM/DD/YYYY')}\nWait ${daysRemaining} more days.`
           );
           return;
         }
@@ -130,6 +133,7 @@ const PlantedCrops = () => {
       }
     }
   };
+  
 
   const loadLogs = async () => {
     try {
