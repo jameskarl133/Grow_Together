@@ -108,6 +108,7 @@ const PlantedCrops = () => {
         const estimatedDays = parseInt(selectedCrop.crop_estdate);
         const harvestDate = moment(plantedDate).add(estimatedDays, 'days');
         const currentDate = moment();
+        // const currentDate = moment("2025-1-15T14:30:00");
         // console.log(plantedDate.format('MM/DD/YYYY'));
         // console.log(harvestDate.format('MM/DD/YYYY'));
         // console.log(currentDate.format('MM/DD/YYYY'));

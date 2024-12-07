@@ -142,6 +142,7 @@ const AddDevice = ({ navigation, route }) => {
                     deviceName: deviceName,
                     crop_id:selectedCropid
                 }
+                console.log(selectedCropid)
                 writeData(info, 'n|'+ deviceName);
                 writeData(info, 'cn|' + selectedCropid);
         }
