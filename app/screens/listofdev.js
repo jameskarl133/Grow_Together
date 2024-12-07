@@ -42,7 +42,7 @@ const DeviceList = ({ navigation }) => {
     const handleDevicePress = (device) => {
         // console.log('ajsdfk')
         setdev(device);
-        navigation.navigate('Monitor Crop', { device });
+        navigation.navigate('MonitorCrop', { device });
         
     };
 

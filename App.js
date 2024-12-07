@@ -13,6 +13,7 @@ import MyComponent from './Provider';
 import AddDevice from './app/screens/AddDevice';
 import ConnectDevice from './app/screens/ConnectDevice';
 import ForgotPass from './app/screens/forgotpass';
+import { registerRootComponent } from 'expo';
 
 const Stack = createStackNavigator();
 
@@ -105,3 +106,5 @@ const styles = StyleSheet.create({
     marginBottom: -1, 
   },
 });
+
+registerRootComponent(App);
