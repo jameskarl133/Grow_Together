@@ -1,49 +1,42 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
-import { ApiContext } from '../../Provider'; // Import ApiContext
+import { ApiContext } from '../../Provider';
 
 const DeviceList = ({ navigation }) => {
-    const { fetchlistofdev , setdev, devicedelete } = useContext(ApiContext); // Access fetchlistofdev from context
+    const { fetchlistofdev, setdev, devicedelete, harvestCrop } = useContext(ApiContext);
     const [devices, setDevices] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         loadDevices();
     }, []);
-    
 
     const loadDevices = async () => {
         try {
-            const data = await fetchlistofdev(); 
+            const data = await fetchlistofdev();
             console.log("Devices fetched:", data);
             setDevices(data);
-            
         } catch (error) {
-            console.error("Error details:", error); // Log full error details
+            console.error("Error details:", error);
             alert(`Network Error: ${error.message}`);
         } finally {
             setLoading(false);
         }
     };
-    
+
     const handleDeleteDevice = async () => {
         try {
+            await harvestCrop();
             await devicedelete();
-            loadDevices(); // Refresh the list after deletion
+            loadDevices();
         } catch (error) {
-            Alert.alert('Error', 'Failed to delete device');
+            Alert.alert('Error', 'Failed to delete devices and harvest crop');
         }
     };
 
-    useEffect(() => {
-        loadDevices();
-    }, []);
-
     const handleDevicePress = (device) => {
-        // console.log('ajsdfk')
         setdev(device);
         navigation.navigate('MonitorCrop', { device });
-        
     };
 
     if (loading) {
@@ -52,44 +45,43 @@ const DeviceList = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-        <Text style={styles.title}>Device List</Text>
-        <FlatList
-            data={devices}
-            key={(item) => item.id}
-            renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => handleDevicePress(item)} style={styles.deviceItem}>
-                    <Text style={styles.deviceName}>{item.device_name}</Text>
-                    <Text style={styles.deviceMac}>{item.mac_ad}</Text>
-                </TouchableOpacity>
-            )}
-        />
-        <TouchableOpacity 
-            style={styles.deleteAllButton}
-            onPress={() => {
-                Alert.alert(
-                    'Confirm Deletion',
-                    'Are you sure you want to delete all devices?',
-                    [
-                        {
-                            text: 'Cancel',
-                            style: 'cancel'
-                        },
-                        {
-                            text: 'Delete',
-                            onPress: async () => {
-                                console.log('Deleting all devices...');
-                                await handleDeleteDevice();
-                                loadDevices();
+            <Text style={styles.title}>Device List</Text>
+            <FlatList
+                data={devices}
+                key={(item) => item.id}
+                renderItem={({ item }) => (
+                    <TouchableOpacity onPress={() => handleDevicePress(item)} style={styles.deviceItem}>
+                        <Text style={styles.deviceName}>{item.device_name}</Text>
+                        <Text style={styles.deviceMac}>{item.mac_ad}</Text>
+                    </TouchableOpacity>
+                )}
+            />
+            <TouchableOpacity
+                style={styles.deleteAllButton}
+                onPress={() => {
+                    Alert.alert(
+                        'Confirm Deletion',
+                        'Are you sure you want to delete all devices and harvest current crop?',
+                        [
+                            {
+                                text: 'Cancel',
+                                style: 'cancel'
+                            },
+                            {
+                                text: 'Delete',
+                                onPress: async () => {
+                                    console.log('Harvesting crop and deleting all devices...');
+                                    await handleDeleteDevice();
+                                }
                             }
-                        }
-                    ]
-                );
-            }}
-        >
-            <Text style={styles.deleteAllButtonText}>Delete All Devices</Text>
-        </TouchableOpacity>
-    </View>
-);
+                        ]
+                    );
+                }}
+            >
+                <Text style={styles.deleteAllButtonText}>Delete All Devices</Text>
+            </TouchableOpacity>
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
@@ -104,22 +96,22 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     deviceContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-},
-deleteAllButton: {
-    backgroundColor: '#ff4444',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 10,
-},
-deleteAllButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
-},
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    deleteAllButton: {
+        backgroundColor: '#ff4444',
+        padding: 15,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    deleteAllButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
     deviceItem: {
         padding: 15,
         borderRadius: 8,

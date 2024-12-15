@@ -10,7 +10,7 @@ import moment from 'moment';
 
 // initializeNotifications();
 
-const PlantedCrops = () => {
+const PlantedCrops = ({ navigation }) => {
   const [crops, setCrops] = useState([]);
   const [soilMoisture, setSoilMoisture] = useState(null);
   const [waterLevel, setWaterLevel] = useState(null);
@@ -179,6 +179,7 @@ const handleWateringToggle = () => {
   }
 };
 
+
   // value = wsmessage.soil_moisture
   // const categorizeLevel = (value) => {
   //   moisture_level = ''
@@ -195,8 +196,15 @@ const handleWateringToggle = () => {
       <Text style={styles.header}>Monitor Crop</Text>
 
       {crops.length === 0 ? (
-        <Text style={styles.noCropText}>There's no crop planted on this particular device</Text>
-      ) : (
+  <View style={styles.noCropContainer}>
+    <Text style={styles.noCropText}>There's no crop planted on this particular device</Text>
+    <Button 
+      title="Select a New Crop" 
+      onPress={() => navigation.navigate('SelectCrop')}
+      color="#4CAF50"
+    />
+  </View>
+): (
         <>
           {selectedCrop && (
             <View style={styles.cropContainer}>
@@ -297,9 +305,18 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
-  detailsColumn: {
-    marginLeft: 66, // This aligns with the icon + its margin
-  },
+  noCropContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: 20,
+},
+noCropText: {
+  fontSize: 16,
+  color: '#666',
+  textAlign: 'center',
+  marginBottom: 20,
+},
   icon: {
     marginRight: 16,
   },
