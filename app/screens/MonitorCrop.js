@@ -4,8 +4,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ApiContext } from '../../Provider';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+// import { initializeNotifications } from './app/screens/initialize';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
+
+// initializeNotifications();
 
 const PlantedCrops = () => {
   const [crops, setCrops] = useState([]);
@@ -128,6 +131,15 @@ const PlantedCrops = () => {
   
         Alert.alert("Success", `Crop ${selectedCrop.crop_name} has been harvested.`);
         fetchCrops();
+        if (daysRemaining = 0){
+          await Notifications.scheduleNotificationAsync({
+                    content: {
+                      title: 'New Message',
+                      body: `${selectedCrop.crop_name} may now be harvested`,
+                    },
+                    trigger: null,
+                  });
+                }
       } catch (error) {
         console.error('Error updating crop status:', error.message);
         Alert.alert("Error", `Failed to update crop status: ${error.message}`);

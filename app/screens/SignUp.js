@@ -67,7 +67,7 @@ export default function SignUp() {
       field_type: field,
       dob: dob.toString(),
       address: address,
-      email: email,
+      // email: email,
       phno: phoneNumber,
       username: username,
       password: password,
@@ -108,7 +108,6 @@ export default function SignUp() {
       )}
 
       <TextInput placeholder="Address" style={styles.input} value={address} onChangeText={setAddress} />
-      <TextInput placeholder="Email" style={styles.input} value={email} onChangeText={setEmail} keyboardType="email-address" />
       <TextInput placeholder="Phone Number" style={styles.input} value={phoneNumber} onChangeText={setPhoneNumber} keyboardType="numeric" maxLength={11} />
       <TextInput placeholder="Username" style={styles.input} value={username} onChangeText={setUsername} />
 
