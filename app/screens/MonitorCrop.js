@@ -4,17 +4,23 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ApiContext } from '../../Provider';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+// import { initializeNotifications } from './app/screens/initialize';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import moment from 'moment';
+
+// initializeNotifications();
 
 const PlantedCrops = ({ navigation }) => {
   const [crops, setCrops] = useState([]);
   const [soilMoisture, setSoilMoisture] = useState(null);
   const [waterLevel, setWaterLevel] = useState(null);
   const [temperature, setTemperature] = useState(null);
-  const { fetchCropsPlanted, updateCropToHarvest, updateCropLog, websocket, wsmessage } = useContext(ApiContext);
+  const { fetchCropsPlanted, updateCropToHarvest, updateCropLog, websocket, fetchCropLogs, wsmessage } = useContext(ApiContext);
   const [selectedCrop, setSelectedCrop] = useState(null);
   const [moistureLevel, setMoistureLevel] = useState('Loading...');
   const [isWatering, setIsWatering] = useState(false);
+  const [plantedDays, setPlantedDays] = useState(0);
+  const [canHarvest, setCanHarvest] = useState(false);
 
   // Listen for WebSocket messages and update the state
   const categorizeLevel = (value) => {
@@ -93,17 +99,66 @@ const PlantedCrops = ({ navigation }) => {
   const handleUpdateStatus = async () => {
     if (selectedCrop) {
       try {
+        const logs = await fetchCropLogs();
+        const cropLog = logs.find(log => log.crop_name === selectedCrop.crop_name);
+        
+        if (!cropLog || !cropLog.crop_date_planted) {
+          Alert.alert("Error", "No planting date found for this crop");
+          return;
+        }
+  
+        const plantedDate = moment(cropLog.crop_date_planted);
+        const estimatedDays = parseInt(selectedCrop.crop_estdate);
+        const harvestDate = moment(plantedDate).add(estimatedDays, 'days');
+        const currentDate = moment();
+        // const currentDate = moment("2025-1-15T14:30:00");
+        // console.log(plantedDate.format('MM/DD/YYYY'));
+        // console.log(harvestDate.format('MM/DD/YYYY'));
+        // console.log(currentDate.format('MM/DD/YYYY'));
+        // console.log(estimatedDays);
+  
+        if (currentDate.isBefore(harvestDate)) {
+          const daysRemaining = harvestDate.diff(currentDate, 'days');
+          Alert.alert(
+            "Cannot Harvest Yet",
+            `Planted on: ${plantedDate.format('MM/DD/YYYY')}\nCan harvest on: ${harvestDate.format('MM/DD/YYYY')}\nWait ${daysRemaining} more days.`
+          );
+          return;
+        }
+  
         await updateCropToHarvest(selectedCrop.crop_name);
         await updateCropLog(selectedCrop.crop_name);
-
+  
         Alert.alert("Success", `Crop ${selectedCrop.crop_name} has been harvested.`);
         fetchCrops();
+        if (daysRemaining = 0){
+          await Notifications.scheduleNotificationAsync({
+                    content: {
+                      title: 'New Message',
+                      body: `${selectedCrop.crop_name} may now be harvested`,
+                    },
+                    trigger: null,
+                  });
+                }
       } catch (error) {
         console.error('Error updating crop status:', error.message);
         Alert.alert("Error", `Failed to update crop status: ${error.message}`);
       }
     }
   };
+  
+
+  const loadLogs = async () => {
+    try {
+      const fetchedLogs = await fetchCropLogs();
+      setLogs(fetchedLogs);
+    } catch (error) {
+      console.error('Error fetching crop logs:', error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
 const handleWateringToggle = () => {
   if (websocket && websocket.readyState === WebSocket.OPEN) {
@@ -153,8 +208,16 @@ const handleWateringToggle = () => {
         <>
           {selectedCrop && (
             <View style={styles.cropContainer}>
-              <Icon name="sprout" size={50} color="#4CAF50" style={styles.icon} />
-              <Text style={styles.crops}>{selectedCrop.crop_name}</Text>
+              <View style={styles.headerRow}>
+                <Icon name="sprout" size={50} color="#4CAF50" style={styles.icon} />
+                <Text style={styles.crops}>{selectedCrop.crop_name}</Text>
+              </View>
+              <View style={styles.detailsColumn}>
+                <Text style={styles.crops_input}>{selectedCrop.crop_soil}</Text>
+                <Text style={styles.crops_input}>{selectedCrop.crop_moisture}</Text>
+                <Text style={styles.crops_input}>{selectedCrop.crop_temp + "°C"}</Text>
+                <Text style={styles.crops_input}>Date to harvest: {selectedCrop.crop_estdate}</Text>
+              </View>
             </View>
           )}
 
@@ -261,6 +324,10 @@ noCropText: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#333',
+  },
+  crops_input: {
+    fontSize: 16,
+    color: '#666',
   },
   infoText: {
     fontSize: 18,
