@@ -5,6 +5,7 @@ import { ApiContext } from '../../Provider';
 import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 // import { initializeNotifications } from './app/screens/initialize';
+import * as Notifications from "expo-notifications";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 
@@ -78,6 +79,7 @@ const PlantedCrops = ({ navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       fetchCrops();
+      harvestdatenotif();
     }, [])
   );
 
@@ -95,23 +97,46 @@ const PlantedCrops = ({ navigation }) => {
       console.error('Error fetching planted crops:', error.message);
     }
   };
+  const harvestdatenotif = async () => {
+    if (selectedCrop) {
+      try{
+      const logs = await fetchCropLogs(selectedCrop.crop_id);
+      const cropLog = logs.find(log => log.crop_name === selectedCrop.crop_name && log.crop_date_harvested === "None");
+      const plantedDate = moment(cropLog.crop_date_planted).add(8, 'hours');
+      const estimatedDays = parseInt(selectedCrop.crop_estdate);
+      const harvestDate = moment(plantedDate).add(estimatedDays, 'days');
+      const currentDate = moment();
+      // const currentDate = moment("2025-2-27T23:30:00");
 
+      
+      const daysRemaining = harvestDate.diff(currentDate, 'days');
+      if(daysRemaining === 0){
+      await Notifications.scheduleNotificationAsync({
+                content: {
+                  title: 'New Message',
+                  body: `${selectedCrop.crop_name} may now be harvested`,
+                },
+                trigger: null,
+              });
+            }
+          } catch(error) {
+            console.error('Error notifying:', error.message);
+          }
+        }
+      };
+    
   const handleUpdateStatus = async () => {
     if (selectedCrop) {
       try {
         const logs = await fetchCropLogs();
-        const cropLog = logs.find(log => log.crop_name === selectedCrop.crop_name);
-        
-        if (!cropLog || !cropLog.crop_date_planted) {
-          Alert.alert("Error", "No planting date found for this crop");
-          return;
-        }
-  
-        const plantedDate = moment(cropLog.crop_date_planted);
+        const cropLog = logs.find(log => log.crop_name === selectedCrop.crop_name && log.crop_date_harvested === "None");
+
+        const plantedDate = moment(cropLog.crop_date_planted).add(8, 'hours');
         const estimatedDays = parseInt(selectedCrop.crop_estdate);
         const harvestDate = moment(plantedDate).add(estimatedDays, 'days');
-        const currentDate = moment();
-        // const currentDate = moment("2025-1-15T14:30:00");
+        const currentDate = moment()
+        // .add(8, 'hours');
+        // const currentDate = moment("2025-2-27T23:30:00", "YYYY-MM-DDTHH:mm:ss");
         // console.log(plantedDate.format('MM/DD/YYYY'));
         // console.log(harvestDate.format('MM/DD/YYYY'));
         // console.log(currentDate.format('MM/DD/YYYY'));
@@ -121,7 +146,7 @@ const PlantedCrops = ({ navigation }) => {
           const daysRemaining = harvestDate.diff(currentDate, 'days');
           Alert.alert(
             "Cannot Harvest Yet",
-            `Planted on: ${plantedDate.format('MM/DD/YYYY')}\nCan harvest on: ${harvestDate.format('MM/DD/YYYY')}\nWait ${daysRemaining} more days.`
+            `Planted on: ${plantedDate.format('MM/DD/YYYY, h:mm:ss a')}\nCan harvest on: ${harvestDate.format('MM/DD/YYYY')}\nWait ${daysRemaining} more days.`
           );
           return;
         }
@@ -131,15 +156,6 @@ const PlantedCrops = ({ navigation }) => {
   
         Alert.alert("Success", `Crop ${selectedCrop.crop_name} has been harvested.`);
         fetchCrops();
-        if (daysRemaining = 0){
-          await Notifications.scheduleNotificationAsync({
-                    content: {
-                      title: 'New Message',
-                      body: `${selectedCrop.crop_name} may now be harvested`,
-                    },
-                    trigger: null,
-                  });
-                }
       } catch (error) {
         console.error('Error updating crop status:', error.message);
         Alert.alert("Error", `Failed to update crop status: ${error.message}`);
@@ -258,17 +274,28 @@ const handleWateringToggle = () => {
             styles.wateringIconContainer,
             isWatering && styles.wateringIconActive
           ]}
-          onLongPress={
-            ()=>{
+          onLongPress={ async () => {
             console.log('Websocket state:', websocket?.readyState)
             websocket.send("WATER_ON")
             console.log('pressed')
-            }
-            }
-          onPressOut={
-            ()=>{
+            await Notifications.scheduleNotificationAsync({
+              content: {
+                title: "Watering",
+                body: "Water pump has been turned on",
+              },
+              trigger: null,
+            });
+            }}
+          onPressOut={ async ()=>{
             websocket.send("WATER_OFF")
             console.log('unpressed')
+            await Notifications.scheduleNotificationAsync({
+              content: {
+                title: "Watering",
+                body: "Water pump has been turned off",
+              },
+              trigger: null,
+            });
             }
             }
         >

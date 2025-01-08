@@ -50,16 +50,18 @@ const ViewProfile = () => {
       if (farmerId) {
         const currentProfileData = await viewFarmerProfile(farmerId);
 
+        // Password validation regex - requires at least 1 special character and 1 number
+        const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{1,}$/;
+
         if (
           currentProfileData.fname === profile.fname &&
           currentProfileData.dob === profile.dob &&
           currentProfileData.address === profile.address &&
-          currentProfileData.email === profile.email &&
           currentProfileData.phno === profile.phno &&
           currentProfileData.username === profile.username &&
           !newPassword 
         ) {
-          Alert.alert('No changes', 'You didn’t change your profile.');
+          Alert.alert('No changes', "You didn't change your profile.");
           setModalVisible(false);
           return;
         }
@@ -75,9 +77,13 @@ const ViewProfile = () => {
             return;
           }
 
+          if (!passwordRegex.test(newPassword)) {
+            Alert.alert('Error', 'Password must contain at least 1 number and 1 special character (!@#$%.^&*)');
+            return;
+          }
+
           await updateFarmerProfile(farmerId, { ...profile, password: newPassword });
         } else {
-          // Update profile without changing password if not provided
           await updateFarmerProfile(farmerId, profile);
         }
 
@@ -93,7 +99,7 @@ const ViewProfile = () => {
       console.error('Error updating profile:', error.message);
       Alert.alert('Error', 'Failed to update profile. Please try again.');
     }
-  };
+};
 
   const handleUpdateProfileIcon = () => {
     setModalVisible(true);
@@ -113,7 +119,7 @@ const ViewProfile = () => {
         <View style={styles.infoContainer}>
           <Text style={styles.detail}>Birthdate: {profile.dob}</Text>
           <Text style={styles.detail}>Address: {profile.address}</Text>
-          <Text style={styles.detail}>Email: {profile.email}</Text>
+          {/* <Text style={styles.detail}>Email: {profile.email}</Text> */}
           <Text style={styles.detail}>Phone: {profile.phno}</Text>
         </View>
 
@@ -161,15 +167,15 @@ const ViewProfile = () => {
                     onChangeText={(text) => setProfile({ ...profile, address: text })}
                   />
                 </View>
-                <View style={styles.inputContainer}>
+                {/* <View style={styles.inputContainer}>
                   <Text style={styles.label}>Email:</Text>
                   <TextInput
                     style={styles.input}
                     value={profile.email}
                     onChangeText={(text) => setProfile({ ...profile, email: text })}
                     keyboardType="email-address"
-                  />
-                </View>
+                  /> */}
+                {/* </View> */}
                 <View style={styles.inputContainer}>
                   <Text style={styles.label}>Phone Number:</Text>
                   <TextInput

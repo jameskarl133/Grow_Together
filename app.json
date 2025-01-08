@@ -4,7 +4,7 @@
     "slug": "Grow_Together",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./app/images/gt-logo-perm1.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",

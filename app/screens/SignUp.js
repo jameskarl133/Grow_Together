@@ -12,7 +12,7 @@ export default function SignUp() {
   const [lastName, setLastName] = useState('');
   const [dob, setDob] = useState('');
   const [address, setAddress] = useState('');
-  const [email, setEmail] = useState('');
+  // const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -32,13 +32,30 @@ export default function SignUp() {
 
   const handleConfirm = (event, selectedDate) => {
     const currentDate = selectedDate || date;
-    hideDatePicker();
+  hideDatePicker();
+
+  // Calculate age
+  const today = new Date();
+  const birthDate = new Date(currentDate);
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+
+  // Check if user is 18 or older
+  if (age >= 18) {
     setDate(currentDate);
     setDob(currentDate.toISOString().split('T')[0]);
-  };
+  } else {
+    Alert.alert('Age Restriction', 'You must be 18 years or older to register.');
+    setDob('');
+  }
+};
 
   const validateFields = () => {
-    if (!firstName || !lastName || !dob || !address || !email || !phoneNumber || !username || !password || !confirmPassword || !field || !securityQuestion || !securityAnswer) {
+    if (!firstName || !lastName || !dob || !address || !phoneNumber || !username || !password || !confirmPassword || !field || !securityQuestion || !securityAnswer) {
       Alert.alert('Error', 'Please fill out all required fields.');
       return false;
     }

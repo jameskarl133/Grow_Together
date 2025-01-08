@@ -18,7 +18,10 @@ const Logs = () => {
   const loadLogs = async () => {
     try {
       const fetchedLogs = await fetchCropLogs();
-      setLogs(fetchedLogs);
+      const sortedLogs = fetchedLogs.sort((a, b) => 
+        new Date(b.crop_date_planted) - new Date(a.crop_date_planted)
+      );
+      setLogs(sortedLogs);
     } catch (error) {
       console.error('Error fetching crop logs:', error.message);
     } finally {
@@ -37,15 +40,31 @@ const Logs = () => {
     }
   };
 
-  const renderLogItem = ({ item }) => (
-    <View style={styles.logItem}>
-      <Text style={styles.detail}>Crop: {item.crop_name}</Text>
-      <Text style={styles.detail}>Planted Date: {item.crop_date_planted}</Text>
-      <Text style={styles.detail}>
-        Harvested Date: {item.crop_date_harvested ? item.crop_date_harvested : 'Not harvested yet'}
-      </Text>
-    </View>
-  );
+  const renderLogItem = ({ item }) => {
+    const formatDate = (dateString) => {
+      if (!dateString) return 'Not harvested yet';
+      const date = new Date(dateString);
+      date.setHours(date.getHours() + 8); // Adjust for GMT+8
+      return date.toLocaleString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+        timeZone: 'Asia/Manila'
+      });
+    };
+    return (
+      <View style={styles.logItem}>
+        <Text style={styles.detail}>Crop: {item.crop_name}</Text>
+        <Text style={styles.detail}>Planted Date: {formatDate(item.crop_date_planted)}</Text>
+        <Text style={styles.detail}>
+          Harvested Date: {formatDate(item.crop_date_harvested)}
+        </Text>
+      </View>
+    );
+  };
 
   if (loading) {
     return (

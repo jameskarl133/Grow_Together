@@ -35,8 +35,31 @@ const NotificationDisplay = () => {
     try {
       const response = await fetch('http://3.106.195.135:8000/notification');
       const data = await response.json();
-      console.log('Fetched messages:', data);
-
+  
+      // Update each item's timestamp
+      data.forEach((item) => {
+        // Convert timestamp to a Date object
+        const [hours, minutes, period] = item.timestamp.split(/[: ]/);
+        let date = new Date();
+        date.setHours(period === 'PM' ? +hours % 12 + 12 : +hours);
+        date.setMinutes(+minutes);
+  
+        // Add 8 hours
+        date.setHours(date.getHours() + 8);
+  
+        // Format back to 12-hour format with AM/PM
+        const updatedHours = date.getHours() % 12 || 12; // Convert to 12-hour
+        const updatedMinutes = String(date.getMinutes()).padStart(2, '0');
+        const updatedPeriod = date.getHours() >= 12 ? 'PM' : 'AM';
+  
+        const updatedTime = `${updatedHours}:${updatedMinutes} ${updatedPeriod}`;
+  
+        // Replace the original timestamp with the updated one
+        item.timestamp = updatedTime;
+      });
+  
+      console.log('Updated messages:', data);
+  
       if (Array.isArray(data)) {
         setMessages(data.reverse()); // Show the latest messages first
       } else {
@@ -46,6 +69,7 @@ const NotificationDisplay = () => {
       console.error('Error fetching saved messages:', error);
     }
   };
+  
 
   // // Function to fetch the latest message from the database and trigger a notification
   // const fetchLatestMessageFromDatabase = async () => {

@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { ApiContext } from '../../Provider';
 
 const DeviceList = ({ navigation }) => {
-    const { fetchlistofdev, setdev, devicedelete, harvestCrop } = useContext(ApiContext);
+    const { fetchlistofdev, setdev, devicedelete, harvestCrop, fetchCropsPlanted } = useContext(ApiContext);
     const [devices, setDevices] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -26,13 +27,22 @@ const DeviceList = ({ navigation }) => {
 
     const handleDeleteDevice = async () => {
         try {
-            await harvestCrop();
+            const plantedcrop = await fetchCropsPlanted();
+            const cropplanted = plantedcrop.find(crop => crop.crop_status === 'planted');
+            if (cropplanted) {
+                Alert.alert(
+                    'Cannot Delete',
+                    'There are currently planted crops. Please harvest all crops before deleting devices.',
+                    [{ text: 'OK' }]
+                );
+                return;
+            }
             await devicedelete();
-            loadDevices();
         } catch (error) {
-            Alert.alert('Error', 'Failed to delete devices and harvest crop');
+            Alert.alert('Error', 'Failed to delete devices');
         }
     };
+    
 
     const handleDevicePress = (device) => {
         setdev(device);
@@ -60,26 +70,31 @@ const DeviceList = ({ navigation }) => {
                 style={styles.deleteAllButton}
                 onPress={() => {
                     Alert.alert(
-                        'Confirm Deletion',
-                        'Are you sure you want to delete all devices and harvest current crop?',
+                        'Confirm Disconnection',
+                        'Are you sure you want to disconnect device?',
                         [
                             {
                                 text: 'Cancel',
                                 style: 'cancel'
                             },
                             {
-                                text: 'Delete',
+                                text: 'Disconnect',
                                 onPress: async () => {
-                                    console.log('Harvesting crop and deleting all devices...');
+                                    console.log('disconnecting all devices...');
                                     await handleDeleteDevice();
+                                    // await devicedelete();
                                 }
                             }
                         ]
                     );
                 }}
             >
-                <Text style={styles.deleteAllButtonText}>Delete All Devices</Text>
+                <Text style={styles.deleteAllButtonText}>Disconnect Device</Text>
             </TouchableOpacity>
+                  {/* Reload Button */}
+      <TouchableOpacity style={styles.reloadButton} onPress={loadDevices}>
+        <Ionicons name="reload" size={20} color="#fff" />
+      </TouchableOpacity>
         </View>
     );
 };
@@ -95,6 +110,17 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 20,
     },
+    reloadButton: {
+        position: 'absolute',
+        bottom: 90,
+        right: 30,
+        backgroundColor: '#007bff',
+        borderRadius: 50,
+        padding: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 5,
+      },
     deviceContent: {
         flexDirection: 'row',
         justifyContent: 'space-between',
